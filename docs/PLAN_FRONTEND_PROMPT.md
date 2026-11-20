@@ -58,7 +58,7 @@ review intermediate artifacts and the final video, and check the state of the en
     size is remembered per table for the duration of the session.
   - Per-component SCSS consuming the theme tokens (`--mat-sys-*` and our own);
     no hardcoded colours or sizes in the component `.scss` files.
-- Respect the repo conventions (MIT licence "Copyright (c) 2026 Jesús Suero",
+- Respect the repo conventions (Apache-2.0 licence "Copyright (c) 2026 Jesús Suero",
   `CLAUDE.md`, `go test ./...`, `openspec validate --strict`).
 - The current CLI does not change its behaviour or its flags. If the bridge needs something
   new from the core, propose it as a separate capability and justify it.

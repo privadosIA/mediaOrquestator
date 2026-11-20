@@ -101,7 +101,7 @@ It is the local alternative to the project's Mureka/Suno. Videos are not part of
   bundles (LM + encoder + DiT + VAE) that share files, as Krea 2 and
   IntoRealism already do; a **Music** tab in the Models screen; the environment shows
   `ace-lm`/`ace-synth` like `sd`/`piper`.
-- Respect the repo conventions (MIT "Copyright (c) 2026 Jesús Suero",
+- Respect the repo conventions (Apache-2.0 "Copyright (c) 2026 Jesús Suero",
   `go test ./...`, `openspec validate --strict`, Angular conventions from
   `docs/PLAN_FRONTEND_PROMPT.md`: one component per folder with separate `.ts/.html/.scss`,
   `shared/`, `mo-table` with paginator `[4,10,20,50,100]`, theme tokens,

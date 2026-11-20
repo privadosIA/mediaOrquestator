@@ -121,7 +121,7 @@ The links are to the public copies of these repositories. The third-party tools,
 
 ## License
 
-Released under the [MIT License](LICENSE). Third-party models and voices keep their own licenses (see the model catalog notes in [docs/SERVER.md](docs/SERVER.md#models-voices-and-loras)). The full list of tools and models with their licenses, and which are non-commercial, is in [THIRD_PARTY.md](THIRD_PARTY.md).
+Released under the [Apache License 2.0](LICENSE). Third-party models and voices keep their own licenses (see the model catalog notes in [docs/SERVER.md](docs/SERVER.md#models-voices-and-loras)). The full list of tools and models with their licenses, and which are non-commercial, is in [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## Maintenance
 

@@ -1,6 +1,6 @@
 # Third-party software and models
 
-mediaOrquestator is released under the [MIT License](LICENSE). That covers this repository's own code only.
+mediaOrquestator is released under the [Apache License 2.0](LICENSE). That covers this repository's own code only.
 It does not bundle any model: models are downloaded on demand, from the Models tab or the `scripts/get-*.sh`
 scripts, **from their authors, under their authors' licenses**. Check each license before using the output
 commercially. This file is a guide, not legal advice, and the license text of each project is the one that counts.
