@@ -55,7 +55,7 @@ scenes:
 
 This behavior is specified in detail in `openspec/specs/` (one capability per `internal/` package, plus `scene-import`, `export` and the management server and dashboard); the documents listed below are derived from those specs.
 
-> **This repository is the server only:** the API, its access token and its security. The dashboards are a separate project that is not published here, and the server serves any built front end from a folder with `orchestrator serve --web-dir <folder>` (see [docs/SERVER.md](docs/SERVER.md#a-front-end-from-a-folder---web-dir)). `./serve.sh` starts only the server, and the binary has no front end inside. The screens described below are those of the dashboards.
+> **This repository is the server only:** the API, its access token and its security. The dashboards are a separate project, [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs), and the server serves any built front end from a folder with `orchestrator serve --web-dir <folder>` (see [docs/SERVER.md](docs/SERVER.md#a-front-end-from-a-folder---web-dir)). `./serve.sh` starts only the server, and the binary has no front end inside. The screens described below are those of the dashboards.
 
 ## Quick start
 
@@ -106,11 +106,12 @@ Which browser pages may call the API from another origin (CORS) is decided by th
 
 ## Related repositories
 
-Depends on `heartmula`, `diffrhythm2` and `lion-clap` (the music services it starts) and, through them, on `musicgen-core`.
+Depends on `heartmula`, `diffrhythm2` and `lion-clap` (the music services it starts) and, through them, on `musicgen-core`. Used by `dashboards-labs` (its API contract).
 
 | Repository | What it is |
 |---|---|
 | [`mediaOrquestator`](https://github.com/privadosIA/mediaOrquestator) (this repository) | The server: the HTTP API and its contract, the pipelines (video, images, music), the run history and the music services it starts. |
+| [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs) | The dashboards (Angular) that talk to the server through its OpenAPI contract. |
 | [`heartmula`](https://github.com/privadosIA/heartmula) | C# (.NET 8 + TorchSharp) port of [heartlib](https://github.com/HeartMuLa/heartlib): the HeartMuLa song generator, run by the server as a service. |
 | [`DiffRhythm2`](https://github.com/privadosIA/DiffRhythm2) | C# port of [DiffRhythm2](https://github.com/ASLP-lab/DiffRhythm2): a diffusion model that writes a whole song. |
 | [`lion-clap`](https://github.com/privadosIA/lion-clap) | C# port of [LAION-CLAP](https://github.com/LAION-AI/CLAP): audio and text embeddings, used to recognise songs. |

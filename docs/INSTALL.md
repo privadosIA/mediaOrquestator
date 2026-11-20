@@ -281,7 +281,7 @@ Some downloads need an account key (Hugging Face for gated models); the Models s
 go build -o bin/orchestrator ./cmd/orchestrator
 ```
 
-This repository is the server only: the binary has no front end inside and needs no Node.js to build. A dashboard is a separate project (`dashboards-lab`) that you build there and hand to the server as a folder with `--web-dir` (see [SERVER.md](SERVER.md)). `./serve.sh` builds its own server binary (`bin/orchestrator-api`) and starts it.
+This repository is the server only: the binary has no front end inside and needs no Node.js to build. A dashboard is a separate project ([`dashboards-labs`](https://github.com/privadosIA/dashboards-labs)) that you build there and hand to the server as a folder with `--web-dir` (see [SERVER.md](SERVER.md)). `./serve.sh` builds its own server binary (`bin/orchestrator-api`) and starts it.
 
 ## Ollama (prompt assistant)
 
@@ -327,7 +327,7 @@ On a distribution the installer does not know, it lists the tools to install by 
 - **The model does not fit or the machine runs out of memory.** A model is copied to RAM as well as to VRAM. Close other heavy programs, use a smaller or more quantized set, and keep `MEM_MAX` (24G by default in `./serve.sh`) below your RAM.
 - **Ollama starves the render GPU of VRAM.** See the note under [Requirements (reference)](#requirements-reference).
 - **`ffmpeg` has no `libx264`.** See [ffmpeg](#ffmpeg).
-- **The root of the server shows a plain-text note instead of a dashboard.** That is expected: the server has no front end of its own. Build a dashboard in `dashboards-lab` and start the server with `--web-dir <folder>` (see [SERVER.md](SERVER.md)).
+- **The root of the server shows a plain-text note instead of a dashboard.** That is expected: the server has no front end of its own. Build a dashboard in [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs) and start the server with `--web-dir <folder>` (see [SERVER.md](SERVER.md)).
 - **A step fails halfway.** Read `~/.cache/mediaorquestator/install.log`, fix the cause and run the installer again; it continues from what is still missing.
 
 ## Requirements (reference)

@@ -214,7 +214,7 @@ The optional **DiffRhythm2** song generator (English lyrics only, no instrumenta
 ## A front end from a folder (`--web-dir`)
 
 This repository is the server only. The screens (**Create**, Projects, Runs, Statistics, Gallery, Library, Models,
-Environment, API and **Settings**) belong to the dashboards of the `dashboards-lab` repository, which talk to this server
+Environment, API and **Settings**) belong to the dashboards of the [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs) repository, which talk to this server
 through its OpenAPI contract and are built there. The binary has no front end inside: point it at the folder of any built
 front end and it serves that folder at `/`:
 

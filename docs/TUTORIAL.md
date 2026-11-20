@@ -2,7 +2,7 @@
 
 [← Back to the README](../README.md) · [Versión en español](TUTORIAL.es.md)
 
-The screen-by-screen guide to the **dashboard** (environment, models, the editor, runs, history, statistics, music and your own images) lives with the dashboard, in the `dashboards-lab` project (`docs/TUTORIAL.md`), because it describes screens that change with it. This document keeps what does not depend on the front end: the concepts, what to do when something fails, the same things from the terminal, the glossary, the API screen of the server and a complete worked example with its `scenes.yaml`. The section numbers are the ones of the full guide, so the ones that are missing here (3 to 10) are in the dashboard's.
+The screen-by-screen guide to the **dashboard** (environment, models, the editor, runs, history, statistics, music and your own images) lives with the dashboard, in the [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs) project (`docs/TUTORIAL.md`), because it describes screens that change with it. This document keeps what does not depend on the front end: the concepts, what to do when something fails, the same things from the terminal, the glossary, the API screen of the server and a complete worked example with its `scenes.yaml`. The section numbers are the ones of the full guide, so the ones that are missing here (3 to 10) are in the dashboard's.
 
 ## Contents
 
