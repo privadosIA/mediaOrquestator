@@ -1,0 +1,45 @@
+<style>
+#gt{position:absolute;left:0;right:0;top:14vh;height:44vh}
+#gt .s{position:absolute;left:0;right:0;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;text-transform:uppercase;white-space:nowrap;line-height:1}
+#gt .ra,#gt .rb{mix-blend-mode:screen;opacity:0}
+#gt .ra{color:var(--accent)}
+#gt .rb{color:color-mix(in srgb,var(--fg) 60%,var(--accent))}
+#gt .sl{display:none}
+</style>
+<div id="gt"></div>
+<script>
+(function(){
+  var P = window.__params, root = document.getElementById('gt'), parts = [];
+  // At rest the word is one piece of text; while it tears it is drawn as slices with colour fringes.
+  var main = document.createElement('div'); main.className = 's'; main.textContent = P.text; root.appendChild(main);
+  var probe = document.createElement('span'); probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:900 100px var(--display);text-transform:uppercase';
+  probe.textContent = P.text; document.body.appendChild(probe);
+  var wide = probe.getBoundingClientRect().width || 1; document.body.removeChild(probe);
+  var size = Math.min(window.innerHeight * 0.21, window.innerWidth * 0.86 * 100 / wide);
+  root.style.fontSize = size + 'px';
+  for (var i = 0; i < P.slices; i++) {
+    var top = i * 100 / P.slices, bot = 100 - (i + 1) * 100 / P.slices, g = [];
+    ['', 'ra', 'rb'].forEach(function(cls){
+      var d = document.createElement('div'); d.className = 's sl ' + cls; d.textContent = P.text;
+      d.style.clipPath = 'inset(' + top + '% 0 ' + bot + '% 0)'; root.appendChild(d); g.push(d);
+    });
+    parts.push(g);
+  }
+  function hash(a, b){ var x = Math.imul(a + 374761393, 668265263) ^ Math.imul(b + 1274126177, 2246822519); x = Math.imul(x ^ x >>> 13, 1274126177); return ((x ^ x >>> 16) >>> 0) / 4294967296; }
+  window.__partSeek = function(t, b){
+    var n = Math.max(0, b.number), frame = Math.floor(t * 30);
+    // The tear starts a hair after the beat, so the frame exactly on it is clean, and it settles by the middle of the beat.
+    var heat = b.number < 0 ? 0 : Math.min(1, b.position / 0.05) * Math.max(0, 1 - b.position / 0.45);
+    var tearing = heat > 0.001;
+    main.style.display = tearing ? 'none' : 'flex';
+    parts.forEach(function(g, i){
+      g.forEach(function(d){ d.style.display = tearing ? 'flex' : 'none'; });
+      if (!tearing) return;
+      var dx = (hash(n * 31 + i, frame) - 0.5) * 2 * 9 * heat * heat;
+      g[0].style.transform = 'translateX(' + dx + 'vh)';
+      g[1].style.transform = 'translateX(' + (dx - 2.2 * heat) + 'vh)'; g[1].style.opacity = String(0.85 * Math.min(1, heat * 2));
+      g[2].style.transform = 'translateX(' + (dx + 2.2 * heat) + 'vh)'; g[2].style.opacity = String(0.6 * Math.min(1, heat * 2));
+    });
+  };
+})();
+</script>

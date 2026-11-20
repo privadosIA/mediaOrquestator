@@ -1,0 +1,23 @@
+{
+ "name": "bot",
+ "description": "A square robot with an antenna and a face that changes with the mood",
+ "version": 1,
+ "width": 200,
+ "height": 240,
+ "anchor": {
+  "x": 0.5,
+  "y": 1.0
+ },
+ "poses": {
+  "idle": "idle.svg",
+  "wave": "wave.svg",
+  "point": "point.svg"
+ },
+ "expressions": [
+  "happy",
+  "sad",
+  "surprised"
+ ],
+ "default_pose": "idle",
+ "default_expression": "happy"
+}

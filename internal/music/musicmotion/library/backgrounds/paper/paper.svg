@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" preserveAspectRatio="none">
+<rect width="1280" height="720" fill="var(--bg)"/>
+<g stroke="var(--fg)" stroke-width="2" opacity=".08"><path d="M0 120 H1280"/><path d="M0 220 H1280"/><path d="M0 320 H1280"/><path d="M0 420 H1280"/></g>
+<rect y="540" width="1280" height="180" fill="var(--fg)" opacity=".08"/>
+<rect y="540" width="1280" height="5" fill="var(--accent)"/>
+</svg>

@@ -1,0 +1,37 @@
+<style>
+#tl{position:absolute;left:5%;right:5%;top:2.2vh;height:7vh;z-index:6}
+#tl .line{position:absolute;left:0;right:0;top:1.2vh;height:.35vh;background:color-mix(in srgb,var(--fg) 35%,transparent)}
+#tl .done{position:absolute;left:0;top:1.2vh;height:.35vh;width:0;background:var(--accent)}
+#tl .mark{position:absolute;top:0}
+#tl .tick{position:absolute;left:-.12vh;top:.4vh;width:.3vh;height:2vh;background:color-mix(in srgb,var(--fg) 60%,transparent)}
+#tl .mark.pass .tick{background:var(--accent)}
+#tl .lab{position:absolute;top:2.8vh;font-size:2.5vh;font-family:var(--body);font-weight:700;white-space:nowrap;color:color-mix(in srgb,var(--fg) 65%,transparent)}
+#tl .mark.pass .lab{color:var(--accent)}
+#tl .cursor{position:absolute;top:.2vh;width:1.4vh;height:2.4vh;margin-left:-.7vh;border-radius:.4vh;background:var(--accent);box-shadow:0 0 1.6vh var(--accent)}
+</style>
+<div id="tl"><div class="line"></div><div class="done"></div><div class="cursor"></div></div>
+<script>
+(function(){
+  var P = window.__params, root = document.getElementById('tl'), cursor = root.querySelector('.cursor'), done = root.querySelector('.done');
+  var labels = String(P.labels).split('|').filter(function(s){ return s.trim() !== ''; }), marks = [];
+  labels.forEach(function(text, i){
+    var frac = labels.length > 1 ? i / (labels.length - 1) : 0;
+    var m = document.createElement('div'); m.className = 'mark'; m.style.left = (frac * 100) + '%';
+    var tick = document.createElement('div'); tick.className = 'tick';
+    var lab = document.createElement('div'); lab.className = 'lab'; lab.textContent = text.trim();
+    lab.style.transform = i === 0 ? 'none' : (i === labels.length - 1 ? 'translateX(-100%)' : 'translateX(-50%)');
+    m.appendChild(tick); m.appendChild(lab); root.appendChild(m); marks.push({el: m, frac: frac});
+  });
+  window.__partSeek = function(t, b){
+    var S = window.__scene || {}, pos;
+    if (P.progress >= 0) pos = P.progress / 100;
+    else if (S.song_length > 0) pos = (S.song_start + t) / S.song_length;       // the position of the song
+    else pos = Math.min(1, t / Math.max(0.001, S.duration || 1));                 // no song: along the scene
+    pos = Math.min(1, Math.max(0, pos));
+    cursor.style.left = (pos * 100) + '%'; done.style.width = (pos * 100) + '%';
+    marks.forEach(function(m){ m.el.classList.toggle('pass', pos >= m.frac - 1e-6); });
+    var lift = b.number < 0 ? 0 : Math.pow(1 - b.position, 3);
+    cursor.style.transform = 'scale(' + (1 + 0.25 * lift) + ')';
+  };
+})();
+</script>

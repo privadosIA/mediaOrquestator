@@ -1,0 +1,139 @@
+# A 30-second clip: two cats in karate suits have a friendly martial-arts match in a dojo.
+# 15 shots of 2 s. Each shot is a still picture that MiniMax H3 animates from its first frame with the
+# 8-step LoRA. `subject_prompt` describes the two cats and the place once and is prepended to every shot
+# so they are the same in every cut; each `prompt` only describes the shot and `motion_prompt` only what moves.
+# Run it from the project folder, with `models/` and `voices/` next to it:
+#   bin/orchestrator --gpu 1 --keep-tmp scenes.yaml
+# (about 3 minutes per shot, 48 minutes in all, on a 16 GB card)
+project: cats-karate
+output:
+  mode: video
+  file: out/cats-karate.mp4
+  contact_sheet: true
+defaults:
+  voice: voices/en_US-lessac-medium.onnx   # no se usa (todas las escenas son mudas), pero se exige
+  resolution: 1024x576
+  sampler: euler
+  steps: 8
+  fps: 24
+  model_set:
+    diffusion_model: models/intorealismKrea2_v40.safetensors
+    llm: models/Qwen3VL-4B-Instruct-Q4_K_M.gguf
+    vae: models/wan_2.1_vae.safetensors
+    cfg_scale: 1
+  subject_prompt: >-
+    photo of an orange tabby cat in a white karate gi with a black belt and a grey tuxedo cat in a black karate gi with a red belt, both standing upright on two legs like martial artists, detailed fur, traditional wooden dojo, tatami mats, paper screens, warm sunlight through the windows, cinematic, 35mm,
+  negative_prompt: blurry, low quality, human, human face, extra limbs, extra tails, deformed paws, bad anatomy, text, watermark, blood, injury, cartoon
+  animate:
+    engine: minimax-h3
+    first_frame: true
+    diffusion_model: models/video/minimax_h3_fl2va_pruned-Q4_K_M.gguf
+    llm: models/video/qwen3vl_32b_minimax_h3-Q4_K_M.gguf
+    vae: models/video/minimax_h3_video_vae_fp16.safetensors
+    audio_vae: models/video/minimax_h3_audio_vae_fp32.safetensors
+    lora: models/video/minimax_h3_fl2v_turbo_8step.safetensors
+scenes:
+  - id: s01_bow
+    seed: 201
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot of the two cats facing each other in the centre of the dojo, bowing to each other
+    motion_prompt: the two cats bow slowly to each other with respect, static camera
+
+  - id: s02_orange_face
+    seed: 202
+    silence_seconds: 2
+    animate: true
+    prompt: close-up of the orange tabby cat's face, determined look, fighting stance
+    motion_prompt: the orange cat narrows its eyes and tenses, whiskers twitch, static camera
+
+  - id: s03_grey_face
+    seed: 203
+    silence_seconds: 2
+    animate: true
+    prompt: close-up of the grey tuxedo cat's face, focused look, fighting stance
+    motion_prompt: the grey cat lifts its chin and stares, ears turn forward, static camera
+
+  - id: s04_stances
+    seed: 204
+    silence_seconds: 2
+    animate: true
+    prompt: two-shot of both cats in karate fighting stances facing each other, paws raised
+    motion_prompt: both cats shift their weight and circle slowly, paws up, camera pushes in slowly
+
+  - id: s05_punch
+    seed: 205
+    silence_seconds: 2
+    animate: true
+    prompt: medium shot, the orange cat throwing a straight punch at the grey cat
+    motion_prompt: the orange cat snaps a straight punch forward, the grey cat leans back, static camera
+
+  - id: s06_block
+    seed: 206
+    silence_seconds: 2
+    animate: true
+    prompt: medium shot, the grey cat blocking a punch with its forearm
+    motion_prompt: the grey cat blocks with its forearm and answers with a quick jab, static camera
+
+  - id: s07_roundhouse
+    seed: 207
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the grey cat throwing a high roundhouse kick while the orange cat ducks
+    motion_prompt: the grey cat swings a high roundhouse kick, the orange cat ducks under it, static camera
+
+  - id: s08_flying_kick
+    seed: 208
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the orange cat leaping into the air for a flying kick, grey cat watching
+    motion_prompt: the orange cat jumps and flies forward with a kick, the grey cat sidesteps, camera follows slightly
+
+  - id: s09_sweep
+    seed: 209
+    silence_seconds: 2
+    animate: true
+    prompt: low angle shot, the grey cat sweeping its leg along the tatami while the orange cat jumps over it
+    motion_prompt: the grey cat sweeps low, the orange cat hops over the leg, static camera
+
+  - id: s10_paws
+    seed: 210
+    silence_seconds: 2
+    animate: true
+    prompt: close-up of the paws of both cats exchanging fast blows, shallow depth of field
+    motion_prompt: the paws strike and block in a rapid exchange, static camera
+
+  - id: s11_spin_kick
+    seed: 211
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the orange cat performing a spinning back kick, dust floating in the sunbeams
+    motion_prompt: the orange cat spins and kicks, dust swirls in the light, static camera
+
+  - id: s12_jump_kick
+    seed: 313
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the grey cat leaping high into the air in a jumping spin kick, fully dressed in its black karate gi with black pants covering its legs and the red belt, the orange cat on the tatami looking up at it
+    motion_prompt: the grey cat hangs in the air in a jumping kick and starts to come down, the orange cat watches it, static camera
+
+  - id: s13_stand_off
+    seed: 213
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, both cats landing and facing each other, sunbeams, slow motion feel
+    motion_prompt: both cats settle into a stance and breathe, dust drifts in the light, camera pushes in slowly
+
+  - id: s14_throw
+    seed: 214
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the orange cat performing a judo throw on the grey cat, who flips over onto the tatami
+    motion_prompt: the orange cat throws the grey cat over its hip, the grey cat rolls and lands on the mat, static camera
+
+  - id: s15_bow_end
+    seed: 215
+    silence_seconds: 2
+    animate: true
+    prompt: wide shot, the two cats bowing to each other at the end of the match, golden light
+    motion_prompt: the cats bow respectfully to each other, the light flickers softly, static camera

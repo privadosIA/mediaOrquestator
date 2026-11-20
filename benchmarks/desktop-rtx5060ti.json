@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-24T13:20:37",
+  "machine": {
+    "host": "desktop",
+    "os": "Linux-7.3.0-3-cachyos-x86_64-with-glibc2.44",
+    "cpu": "Intel(R) Core(TM) Ultra 7 265",
+    "threads": 20,
+    "ram_mb": 31453,
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 4070",
+        "vram_mb": 12282,
+        "driver": "615.78.08"
+      },
+      {
+        "index": 1,
+        "name": "NVIDIA GeForce RTX 5060 Ti",
+        "vram_mb": 16311,
+        "driver": "615.78.08"
+      }
+    ],
+    "commit": "192e652",
+    "sd": "stable-diffusion.cpp version master-948-228c707-1-g7867f6d, commit 7867f6d"
+  },
+  "gpu_used": 1,
+  "results": {
+    "sdxl": {
+      "title": "SDXL 1024x576, 20 steps, 4 images",
+      "ok": true,
+      "seconds": 47.5,
+      "phases": {
+        "render": 46.9,
+        "export": 0.0
+      },
+      "peak_vram_mb": 13472,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 25410,
+      "error": ""
+    },
+    "krea2": {
+      "title": "Krea 2 turbo 1024x576, 8 steps, 4 images",
+      "ok": true,
+      "seconds": 95.6,
+      "phases": {
+        "render": 95.1,
+        "export": 0.0
+      },
+      "peak_vram_mb": 15246,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 17592,
+      "error": ""
+    },
+    "intorealism": {
+      "title": "IntoRealism 1024x576, 8 steps, 4 images",
+      "ok": true,
+      "seconds": 99.8,
+      "phases": {
+        "render": 99.7,
+        "export": 0.0
+      },
+      "peak_vram_mb": 15400,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 12232,
+      "error": ""
+    },
+    "wan5b": {
+      "title": "SDXL still + Wan 2.2 5B animation (33 frames, 832x480)",
+      "ok": true,
+      "seconds": 93.5,
+      "phases": {
+        "render": 7.6,
+        "animate": 85.1,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 13408,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 19602,
+      "error": ""
+    },
+    "h3": {
+      "title": "SDXL still + MiniMax H3 first-frame, 8-step LoRA, 768x416",
+      "ok": true,
+      "seconds": 147.3,
+      "phases": {
+        "render": 7.6,
+        "animate": 139.3,
+        "clip": 0.2,
+        "concat": 0.1
+      },
+      "peak_vram_mb": 15264,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 24886,
+      "error": ""
+    },
+    "ltx": {
+      "title": "SDXL still + LTX 2.3 distilled",
+      "ok": true,
+      "seconds": 171.5,
+      "phases": {
+        "render": 7.8,
+        "animate": 163.2,
+        "clip": 0.1,
+        "concat": 0.1
+      },
+      "peak_vram_mb": 15300,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 22979,
+      "error": ""
+    },
+    "music": {
+      "title": "ACE-Step XL turbo, 30 s instrumental song",
+      "ok": true,
+      "seconds": 9.8,
+      "phases": {
+        "compose": 3.7,
+        "synth": 5.7,
+        "export": 0.3
+      },
+      "peak_vram_mb": 13778,
+      "vram_base_mb": 7715,
+      "min_free_ram_mb": 27262,
+      "error": ""
+    }
+  }
+}

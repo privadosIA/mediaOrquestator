@@ -1,0 +1,17 @@
+{
+  "name": "hud-chrome",
+  "description": "A persistent frame: four small corner labels (from the theme's hud, or the parameters), a thin rule at the top and the bottom, the section tag and a timecode, with a dot that blinks on every beat. Put it on a layer from 0 to the end of the song",
+  "version": 1,
+  "cost_ms": 20,
+  "levels": ["simple", "medium", "advanced"],
+  "manual": true,
+  "params": [
+    {"name": "tl", "type": "string", "default": "", "max_length": 40},
+    {"name": "tr", "type": "string", "default": "", "max_length": 40},
+    {"name": "bl", "type": "string", "default": "", "max_length": 40},
+    {"name": "br", "type": "string", "default": "", "max_length": 40},
+    {"name": "rule", "type": "bool", "default": true},
+    {"name": "show_section", "type": "bool", "default": true},
+    {"name": "show_time", "type": "bool", "default": true}
+  ]
+}

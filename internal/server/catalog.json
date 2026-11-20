@@ -1,0 +1,1188 @@
+[
+  {
+    "id": "sd-1-5",
+    "styles": [
+      "general"
+    ],
+    "style_rank": 2,
+    "kind": "model",
+    "name": "Stable Diffusion 1.5",
+    "description": "Punto de partida recomendado: rinde bien a 512x512, necesita poca VRAM y encaja con casi cualquier GPU. Es el que instala get-models.sh. Sirve igual en modo vídeo e imágenes.",
+    "starter": true,
+    "size_bytes": 4265146304,
+    "vram_mb": 4096,
+    "files": [
+      {
+        "name": "v1-5-pruned-emaonly.safetensors",
+        "url": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors"
+      }
+    ],
+    "description_en": "Recommended starting point: performs well at 512x512, needs little VRAM and fits almost any GPU. It is the one get-models.sh installs. Works equally well in video and image mode.",
+    "timing": {
+      "seconds": 4,
+      "resolution": "512x512",
+      "steps": 20,
+      "measured": false
+    },
+    "commercial": "conditions",
+    "license": "CreativeML OpenRAIL-M",
+    "commercial_note": "Permite uso comercial, con una lista de usos prohibidos (Attachment A). Texto de la licencia sin verificar.",
+    "commercial_note_en": "Commercial use allowed, with a list of prohibited uses (Attachment A). License text not verified."
+  },
+  {
+    "id": "sdxl-base-1-0",
+    "styles": [
+      "general"
+    ],
+    "style_rank": 1,
+    "kind": "model",
+    "name": "Stable Diffusion XL base 1.0",
+    "description": "Más detalle y composición a 1024x1024, a cambio de más VRAM y más tiempo por imagen. Úsalo si tu GPU lo aguanta y quieres más calidad. Sirve igual en modo vídeo e imágenes.",
+    "size_bytes": 6938078334,
+    "vram_mb": 10240,
+    "files": [
+      {
+        "name": "sd_xl_base_1.0.safetensors",
+        "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors"
+      }
+    ],
+    "description_en": "More detail and composition at 1024x1024, in exchange for more VRAM and more time per image. Use it if your GPU can handle it and you want higher quality. Works equally well in video and image mode.",
+    "timing": {
+      "seconds": 14,
+      "resolution": "1024x1024",
+      "steps": 25,
+      "measured": false
+    },
+    "commercial": "conditions",
+    "license": "CreativeML OpenRAIL++-M",
+    "commercial_note": "Stability no reclama las imágenes. Hay una lista de usos prohibidos (menores, difamación, decisiones médicas o legales...). La ficha dice «solo investigación», pero la licencia no prohíbe lo comercial.",
+    "commercial_note_en": "Stability claims no rights over the images. A list of prohibited uses applies (minors, defamation, medical or legal decisions...). The card says \"research only\" but the license does not forbid commercial use."
+  },
+  {
+    "id": "sdxl-juggernaut-xl-v9",
+    "styles": [
+      "photo"
+    ],
+    "style_rank": 3,
+    "kind": "model",
+    "name": "Juggernaut XL v9 (SDXL, fotorrealista)",
+    "description": "Checkpoint SDXL de fotorrealismo muy fiable: piel, luz y fondos creíbles. Medido en una RTX 5060 Ti a 832x1216 con 25 pasos: unos 25 s por imagen. Se usa con defaults.model en scenes.yaml, como cualquier SDXL. Licencia: la de RunDiffusion (lee sus términos antes de un uso comercial).",
+    "size_bytes": 7105348188,
+    "vram_mb": 10240,
+    "preset": {
+      "steps": 25
+    },
+    "files": [
+      {
+        "name": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors"
+      }
+    ],
+    "name_en": "Juggernaut XL v9 (SDXL, photorealistic)",
+    "description_en": "Very reliable photorealistic SDXL checkpoint: believable skin, light and backgrounds. Measured on an RTX 5060 Ti at 832x1216 with 25 steps: about 25 s per image. Used with defaults.model in scenes.yaml, like any SDXL. Licence: RunDiffusion's (read its terms before commercial use).",
+    "timing": {
+      "seconds": 14,
+      "resolution": "1024x1024",
+      "steps": 25,
+      "measured": false
+    },
+    "commercial": "conditions",
+    "license": "CreativeML OpenRAIL-M + condición de RunDiffusion",
+    "commercial_note": "Uso personal y creativo, bien. No puede ofrecerse detrás de un servicio de API de pago sin licencia de RunDiffusion.",
+    "commercial_note_en": "Personal and creative use is fine. It may not be offered behind a paid API service without a license from RunDiffusion."
+  },
+  {
+    "id": "sdxl-pony-diffusion-v6",
+    "styles": [
+      "anime"
+    ],
+    "style_rank": 1,
+    "kind": "model",
+    "name": "Pony Diffusion V6 XL (SDXL, ilustración y anime)",
+    "description": "Checkpoint SDXL para ilustración, anime y personajes; con prompts fotográficos da un acabado de render. Medido en una RTX 5060 Ti a 832x1216 con 25 pasos: unos 25 s por imagen. Se usa con defaults.model. Es un espejo no oficial en Hugging Face y puede desaparecer; la licencia es la del autor original (lee sus términos).",
+    "size_bytes": 6938041050,
+    "vram_mb": 10240,
+    "preset": {
+      "steps": 25
+    },
+    "prompt_hint": "Empieza el prompt con score_9, score_8_up, score_7_up para obtener la calidad máxima.",
+    "files": [
+      {
+        "name": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/LyliaEngine/Pony_Diffusion_V6_XL/resolve/main/ponyDiffusionV6XL_v6StartWithThisOne.safetensors"
+      }
+    ],
+    "name_en": "Pony Diffusion V6 XL (SDXL, illustration and anime)",
+    "description_en": "SDXL checkpoint for illustration, anime and characters; with photographic prompts it gives a render-like finish. Measured on an RTX 5060 Ti at 832x1216 with 25 steps: about 25 s per image. Used with defaults.model. It is an unofficial mirror on Hugging Face and may disappear; the licence is the original author's (read its terms).",
+    "prompt_hint_en": "Start the prompt with score_9, score_8_up, score_7_up to get maximum quality.",
+    "timing": {
+      "seconds": 14,
+      "resolution": "1024x1024",
+      "steps": 25,
+      "measured": false
+    },
+    "commercial": "conditions",
+    "license": "Fair AI Public License 1.0-SD (modificada)",
+    "commercial_note": "Prohíbe ejecutar el modelo en webs o aplicaciones con cualquier tipo de monetización (inferencia de pago). Vender las imágenes no aparece restringido. La ficha de Hugging Face declara otra licencia (cdla-permissive-2.0).",
+    "commercial_note_en": "Forbids running the model on sites or apps with any monetization (paid inference). Selling the pictures is not restricted. The Hugging Face metadata declares a different license (cdla-permissive-2.0)."
+  },
+  {
+    "id": "krea2-turbo-q4",
+    "styles": [
+      "photo"
+    ],
+    "style_rank": 2,
+    "kind": "model",
+    "name": "Krea 2 Turbo (Q4, fotorrealista)",
+    "description": "Generador fotorrealista de última generación y rápido: 8 pasos con cfg 1 a 1024x576: medido en una RTX 5060 Ti, unos 17 s por imagen y un pico de 14,2 GB de VRAM. Es el modelo de calidad del proyecto. Se usa con defaults.model_set en scenes.yaml (no con defaults.model). Son tres archivos: el modelo, el codificador de texto Qwen3-VL y el VAE; los dos últimos son piezas de apoyo, no modelos para elegir por separado. Licencia: Krea 2 Community License y su política de uso (lee sus términos antes de un uso comercial); el GGUF es una conversión de terceros.",
+    "size_bytes": 10237386166,
+    "vram_mb": 14336,
+    "preset": {
+      "steps": 8,
+      "cfg_scale": 1,
+      "resolution": "1024x576"
+    },
+    "files": [
+      {
+        "name": "krea2_turbo-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/vantagewithai/Krea-2-Turbo-GGUF/resolve/main/krea2_turbo-Q4_K_M.gguf"
+      },
+      {
+        "name": "Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct-GGUF/resolve/main/Qwen3VL-4B-Instruct-Q4_K_M.gguf"
+      },
+      {
+        "name": "wan_2.1_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors"
+      }
+    ],
+    "name_en": "Krea 2 Turbo (Q4, photorealistic)",
+    "description_en": "State-of-the-art, fast photorealistic generator: 8 steps with cfg 1 at 1024x576: measured on an RTX 5060 Ti, about 17 s per image and a peak of 14.2 GB of VRAM. It is the project's quality model. Used with defaults.model_set in scenes.yaml (not with defaults.model). It is three files: the model, the Qwen3-VL text encoder and the VAE; the last two are supporting pieces, not models to choose separately. Licence: Krea 2 Community License and its usage policy (read its terms before commercial use); the GGUF is a third-party conversion.",
+    "timing": {
+      "seconds": 18,
+      "resolution": "1024x576",
+      "steps": 8,
+      "measured": true
+    },
+    "commercial": "conditions",
+    "license": "Krea 2 Community License",
+    "commercial_note": "Depende de las condiciones de la licencia comunitaria de Krea y de su política de uso; léela antes de un uso comercial.",
+    "commercial_note_en": "Depends on the terms of Krea's community license and its usage policy; read them before commercial use."
+  },
+  {
+    "id": "image-edit-flux-kontext-q4",
+    "kind": "model",
+    "edit": true,
+    "name": "FLUX.1 Kontext dev (Q4, retoque de imágenes por instrucción)",
+    "description": "Edita una imagen que le das según una instrucción («ponle una gorra roja», «cámbiale el fondo a una playa»): cambia solo lo que dices y conserva caras, ropa y fondo. No es un generador de imágenes: necesita una imagen de partida y no se elige como modelo de un proyecto normal (usa defaults.model_set con edit: true en scenes.yaml; Crear lo usa solo cuando adjuntas una imagen y eliges Editarla). Son cuatro archivos: el modelo (GGUF Q4_K_M de QuantStack), los codificadores de texto CLIP-L y T5-XXL fp8 y el VAE de Flux, que son piezas de apoyo, no modelos para elegir por separado. Medido en la RTX 4070 de 12 GB, con la imagen a 1024x576, 20 pasos y cfg 1: 42 s por edición y un pico de 7,9 GB de VRAM (cabe de sobra en 12 GB). Licencia: FLUX.1 [dev] Non-Commercial License: lee sus términos antes de un uso comercial.",
+    "name_en": "FLUX.1 Kontext dev (Q4, instruction-based image editing)",
+    "description_en": "Edits a picture you give it from an instruction (\"put a red cap on him\", \"change the background to a beach\"): it changes only what you say and keeps faces, clothes and background. It is not an image generator: it needs a starting picture and is not chosen as the model of an ordinary project (it is used with defaults.model_set with edit: true in scenes.yaml; Create uses it only when you attach a picture and choose to edit it). It is four files: the model (QuantStack's Q4_K_M GGUF), the CLIP-L and T5-XXL fp8 text encoders and the Flux VAE, which are supporting pieces, not models to choose separately. Measured on the 12 GB RTX 4070, with the picture at 1024x576, 20 steps and cfg 1: 42 s per edit and a peak of 7.9 GB of VRAM (it fits 12 GB with room to spare). Licence: FLUX.1 [dev] Non-Commercial License: read its terms before commercial use.",
+    "size_bytes": 12407201204,
+    "vram_mb": 8192,
+    "min_ram_gb": 16,
+    "preset": {
+      "steps": 20,
+      "cfg_scale": 1,
+      "resolution": "1024x576"
+    },
+    "timing": {
+      "seconds": 42,
+      "resolution": "1024x576",
+      "steps": 20,
+      "measured": true
+    },
+    "files": [
+      {
+        "name": "flux1-kontext-dev-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/QuantStack/FLUX.1-Kontext-dev-GGUF/resolve/main/flux1-kontext-dev-Q4_K_M.gguf"
+      },
+      {
+        "name": "clip_l.safetensors",
+        "role": "clip_l",
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors"
+      },
+      {
+        "name": "t5xxl_fp8_e4m3fn.safetensors",
+        "role": "t5xxl",
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors"
+      },
+      {
+        "name": "ae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Lumina_Image_2.0_Repackaged/resolve/main/split_files/vae/ae.safetensors"
+      }
+    ],
+    "commercial": "no",
+    "license": "FLUX.1 [dev] Non-Commercial",
+    "commercial_note": "No comercial. Para uso comercial usa Qwen-Image-Edit (Apache 2.0).",
+    "commercial_note_en": "Non-commercial. For commercial use pick Qwen-Image-Edit (Apache 2.0)."
+  },
+  {
+    "id": "image-edit-qwen-image-edit-q4",
+    "kind": "model",
+    "edit": true,
+    "name": "Qwen-Image-Edit 2509 (Q4, retoque preciso de imágenes por instrucción)",
+    "description": "Segundo motor de Retoque, junto a FLUX.1 Kontext: edita una imagen que le das según una instrucción («cámbiale el cielo a un atardecer») y conserva personas, ropa y escena. Es más lento que Kontext pero su licencia (Apache 2.0) permite uso comercial. No es un generador de imágenes: necesita una imagen de partida y no se elige como modelo de un proyecto normal (usa defaults.model_set con edit: true, llm y llm_vision en scenes.yaml). Son cuatro archivos: el modelo (GGUF Q4_K_M de QuantStack), el modelo de texto Qwen2.5-VL-7B Q4_K_M con su proyector de visión (unsloth) y el VAE de Qwen-Image. Mide 19 GB en disco y necesita 24 GB de RAM: se lanza con los pesos leídos del disco (--mmap), descargados a la CPU y el VAE por teselas. Medido en la RTX 4070 de 12 GB con la imagen a 1024x576, 20 pasos y cfg 2,5: 113 s por edición (53 s a 512x512) y un pico de 11,3 GB de VRAM, justo en 12 GB.",
+    "name_en": "Qwen-Image-Edit 2509 (Q4, precise instruction-based image editing)",
+    "description_en": "The second Retouch engine, next to FLUX.1 Kontext: it edits a picture you give it from an instruction (\"change the sky to a sunset\") and keeps the people, clothes and scene. It is slower than Kontext but its licence (Apache 2.0) allows commercial use. It is not an image generator: it needs a starting picture and is not chosen as the model of an ordinary project (it is used with defaults.model_set with edit: true, llm and llm_vision in scenes.yaml). It is four files: the model (QuantStack's Q4_K_M GGUF), the Qwen2.5-VL-7B Q4_K_M text model with its vision projector (unsloth) and the Qwen-Image VAE. It takes 19 GB on disk and needs 24 GB of RAM: it runs with the weights read from disk (--mmap), offloaded to the CPU and the VAE in tiles. Measured on the 12 GB RTX 4070 with the picture at 1024x576, 20 steps and cfg 2.5: 113 s per edit (53 s at 512x512) and a peak of 11.3 GB of VRAM, just inside 12 GB.",
+    "size_bytes": 19356788646,
+    "vram_mb": 11500,
+    "min_ram_gb": 24,
+    "preset": {
+      "steps": 20,
+      "cfg_scale": 2.5,
+      "resolution": "1024x576"
+    },
+    "timing": {
+      "seconds": 113,
+      "resolution": "1024x576",
+      "steps": 20,
+      "measured": true
+    },
+    "files": [
+      {
+        "name": "Qwen-Image-Edit-2509-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/QuantStack/Qwen-Image-Edit-2509-GGUF/resolve/main/Qwen-Image-Edit-2509-Q4_K_M.gguf"
+      },
+      {
+        "name": "Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf",
+        "role": "llm",
+        "url": "https://huggingface.co/unsloth/Qwen2.5-VL-7B-Instruct-GGUF/resolve/main/Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf"
+      },
+      {
+        "name": "Qwen2.5-VL-7B-mmproj-F16.gguf",
+        "role": "llm_vision",
+        "url": "https://huggingface.co/unsloth/Qwen2.5-VL-7B-Instruct-GGUF/resolve/main/mmproj-F16.gguf"
+      },
+      {
+        "name": "qwen_image_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors"
+      }
+    ],
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "lora-lcm-sd15",
+    "kind": "lora",
+    "name": "LCM-LoRA para SD 1.5",
+    "description": "Permite generar con muy pocos pasos (unos 4-8 en lugar de 20-30) con modelos SD 1.5, a cambio de algo de detalle. Útil para previsualizar rápido.",
+    "size_bytes": 134621556,
+    "files": [
+      {
+        "name": "lcm-lora-sdv1-5.safetensors",
+        "url": "https://huggingface.co/latent-consistency/lcm-lora-sdv1-5/resolve/main/pytorch_lora_weights.safetensors"
+      }
+    ],
+    "name_en": "LCM-LoRA for SD 1.5",
+    "description_en": "Lets you generate with very few steps (about 4-8 instead of 20-30) with SD 1.5 models, at the cost of some detail. Useful for quick previews.",
+    "commercial": "conditions",
+    "license": "CreativeML OpenRAIL-M",
+    "commercial_note": "Mismo régimen que SD 1.5. Sin verificar.",
+    "commercial_note_en": "Same terms as SD 1.5. Not verified."
+  },
+  {
+    "id": "lora-lcm-sdxl",
+    "kind": "lora",
+    "name": "LCM-LoRA para SDXL",
+    "description": "Lo mismo que el LCM-LoRA de SD 1.5 pero para modelos SDXL: pocos pasos para previsualizar rápido.",
+    "size_bytes": 393855224,
+    "files": [
+      {
+        "name": "lcm-lora-sdxl.safetensors",
+        "url": "https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/pytorch_lora_weights.safetensors"
+      }
+    ],
+    "name_en": "LCM-LoRA for SDXL",
+    "description_en": "Same as the SD 1.5 LCM-LoRA but for SDXL models: few steps for quick previews.",
+    "commercial": "conditions",
+    "license": "CreativeML OpenRAIL++-M",
+    "commercial_note": "Mismo régimen que SDXL. Sin verificar.",
+    "commercial_note_en": "Same terms as SDXL. Not verified."
+  },
+  {
+    "id": "video-wan-2-2-ti2v-5b-q4",
+    "quality": "low",
+    "kind": "video",
+    "name": "Wan 2.2 TI2V 5B (Q4, ligero)",
+    "description": "Anima una imagen (o genera vídeo desde texto): clips de unos 2 s con movimiento real. Medido en una RTX 5060 Ti: unos 100 s por clip y un pico de 5,3 GB de VRAM. Son tres archivos.",
+    "size_bytes": 8023378240,
+    "vram_mb": 6144,
+    "files": [
+      {
+        "name": "Wan2.2-TI2V-5B-Q4_K_S.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/QuantStack/Wan2.2-TI2V-5B-GGUF/resolve/main/Wan2.2-TI2V-5B-Q4_K_S.gguf"
+      },
+      {
+        "name": "umt5-xxl-encoder-Q4_K_S.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_S.gguf"
+      },
+      {
+        "name": "wan2.2_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors"
+      }
+    ],
+    "name_en": "Wan 2.2 TI2V 5B (Q4, light)",
+    "description_en": "Animates an image (or generates video from text): clips of about 2 s with real motion. Measured on an RTX 5060 Ti: about 100 s per clip and a peak of 5.3 GB of VRAM. It is three files.",
+    "timing": {
+      "seconds": 85,
+      "resolution": "832x480",
+      "steps": 20,
+      "frames": 33,
+      "measured": true
+    },
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "video-wan-2-2-ti2v-5b-q8",
+    "quality": "medium",
+    "kind": "video",
+    "name": "Wan 2.2 TI2V 5B (Q8, más fiel)",
+    "description": "Misma familia que la versión ligera, con pesos menos comprimidos: mejor fidelidad al prompt a cambio de más espacio y memoria (no medida). Son tres archivos; el VAE se comparte con la versión ligera.",
+    "size_bytes": 12852648256,
+    "files": [
+      {
+        "name": "Wan2.2-TI2V-5B-Q8_0.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/QuantStack/Wan2.2-TI2V-5B-GGUF/resolve/main/Wan2.2-TI2V-5B-Q8_0.gguf"
+      },
+      {
+        "name": "umt5-xxl-encoder-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q8_0.gguf"
+      },
+      {
+        "name": "wan2.2_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors"
+      }
+    ],
+    "name_en": "Wan 2.2 TI2V 5B (Q8, more faithful)",
+    "description_en": "Same family as the light version, with less compressed weights: better prompt fidelity in exchange for more space and memory (not measured). It is three files; the VAE is shared with the light version.",
+    "timing": {
+      "seconds": 85,
+      "resolution": "832x480",
+      "steps": 20,
+      "frames": 33,
+      "measured": true
+    },
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "video-wan-2-2-i2v-a14b-q4",
+    "quality": "high",
+    "kind": "video",
+    "name": "Wan 2.2 I2V A14B (Q4, quality)",
+    "description": "Anima una imagen con más calidad que la versión 5B: la identidad se mantiene y el movimiento sigue mejor el prompt. Funciona con dos expertos (ruido alto y ruido bajo) y se usa con defaults.animate.high_noise_diffusion_model. Medido en una RTX 5060 Ti con 33 fotogramas a 832x480: unos 684 s por clip (el 5B tarda unos 85 s), un pico de 10,3 GB de VRAM y de 21,1 GB de RAM, sobre una sola imagen de prueba. Son cuatro archivos de unos 21 GB en total; el codificador de texto se comparte con el Wan 5B Q4 y el VAE es el de Wan 2.1, distinto del del 5B. Los GGUF son una conversión de terceros (QuantStack) con licencia Apache-2.0.",
+    "size_bytes": 21247714678,
+    "vram_mb": 11264,
+    "files": [
+      {
+        "name": "Wan2.2-I2V-A14B-HighNoise-Q4_K_S.gguf",
+        "role": "high_noise_model",
+        "url": "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/HighNoise/Wan2.2-I2V-A14B-HighNoise-Q4_K_S.gguf"
+      },
+      {
+        "name": "Wan2.2-I2V-A14B-LowNoise-Q4_K_S.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF/resolve/main/LowNoise/Wan2.2-I2V-A14B-LowNoise-Q4_K_S.gguf"
+      },
+      {
+        "name": "umt5-xxl-encoder-Q4_K_S.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_S.gguf"
+      },
+      {
+        "name": "wan_2.1_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors"
+      }
+    ],
+    "description_en": "Animates an image with higher quality than the 5B version: identity is preserved and the motion follows the prompt better. It works with two experts (high noise and low noise) and is used with defaults.animate.high_noise_diffusion_model. Measured on an RTX 5060 Ti with 33 frames at 832x480: about 684 s per clip (the 5B takes about 85 s), a peak of 10.3 GB of VRAM and 21.1 GB of RAM, on a single test image. It is four files of about 21 GB in total; the text encoder is shared with Wan 5B Q4 and the VAE is Wan 2.1's, different from the 5B's. The GGUFs are a third-party conversion (QuantStack) with an Apache-2.0 licence.",
+    "timing": {
+      "seconds": 680,
+      "resolution": "832x480",
+      "steps": 10,
+      "frames": 33,
+      "measured": true
+    },
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "video-minimax-h3-ref2va-q4",
+    "kind": "video",
+    "name": "MiniMax H3 Ref2VA (Q4, vídeo con audio · 24 GB de RAM)",
+    "description": "Genera vídeo y audio estéreo a la vez a partir de una imagen de referencia (24 fps fijos). Los ~35 GB de pesos se leen con --mmap (el motor lo activa solo), sin copiarlos a RAM: medido con 30 GB de RAM, una GPU de 16 GB, 864x480 y 56 fotogramas (2,3 s con audio), 258 s por clip, 13,5 GB de VRAM y la RAM disponible nunca bajó de 28 GB; hace falta que el disco los lea (SSD recomendado) y unos 24 GB de RAM por prudencia. Se usa con defaults.animate.engine: minimax-h3 (ver docs/SCENES_YAML.md). Son cinco archivos (el quinto es el LoRA turbo v0.1 de Comfy-Org, que baja de 20 a 4 pasos: 96 s en vez de 258 s por clip de 864x480 y 56 fotogramas, pero con personas las caras y el fondo salen peores que con 20 pasos sin LoRA: úsalo para borradores; se activa con defaults.animate.lora y entonces los pasos por defecto son 4); el DiT es la versión recortada (pruned) de leejet/MiniMax-H3-GGUF, el codificador es un Qwen3-VL-32B recortado y los VAE son de Comfy-Org. Licencia «other» de MiniMax: léela antes de uso comercial.",
+    "size_bytes": 37407985232,
+    "vram_mb": 14336,
+    "min_ram_gb": 24,
+    "preset": {
+      "steps": 20,
+      "cfg_scale": 1,
+      "resolution": "864x480"
+    },
+    "files": [
+      {
+        "name": "minimax_h3_ref2va_pruned-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/leejet/MiniMax-H3-GGUF/resolve/main/minimax_h3_ref2va_pruned-Q4_K_M.gguf"
+      },
+      {
+        "name": "qwen3vl_32b_minimax_h3-Q4_K_M.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/leejet/MiniMax-H3-GGUF/resolve/main/qwen3vl_32b_minimax_h3-Q4_K_M.gguf"
+      },
+      {
+        "name": "minimax_h3_video_vae_fp16.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors"
+      },
+      {
+        "name": "minimax_h3_audio_vae_fp32.safetensors",
+        "role": "audio_vae",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors"
+      },
+      {
+        "name": "minimax_h3_ref2v_turbo_4step.safetensors",
+        "role": "lora",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/loras/minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"
+      }
+    ],
+    "name_en": "MiniMax H3 Ref2VA (Q4, video with audio · 24 GB of RAM)",
+    "description_en": "Generates video and stereo audio together from a reference image (fixed 24 fps). The ~35 GB of weights are read with --mmap (the engine enables it) instead of being copied to RAM: measured with 30 GB of RAM, a 16 GB GPU, 864x480 and 56 frames (2.3 s with audio), 258 s per clip, 13.5 GB of VRAM and available RAM never under 28 GB; the disk has to serve the files (an SSD is advised) and about 24 GB of RAM is a prudent minimum. It is used with defaults.animate.engine: minimax-h3 (see docs/SCENES_YAML.md). It is five files (the fifth is Comfy-Org's turbo LoRA v0.1, which cuts 20 steps to 4: 96 s instead of 258 s per 864x480, 56-frame clip, but with people the faces and the background come out worse than with 20 steps without the LoRA: use it for drafts; it is enabled with defaults.animate.lora and then the default steps are 4); the DiT is the pruned version from leejet/MiniMax-H3-GGUF, the encoder is a pruned Qwen3-VL-32B and the VAEs come from Comfy-Org. MiniMax's «other» licence: read it before commercial use.",
+    "timing": {
+      "seconds": 258,
+      "resolution": "864x480",
+      "steps": 20,
+      "frames": 56,
+      "turbo_seconds": 96,
+      "turbo_steps": 4,
+      "measured": true
+    },
+    "low_vram": {
+      "vram_mb": 11520,
+      "resolution": "768x416"
+    },
+    "commercial": "conditions",
+    "license": "MiniMax H3 Community License",
+    "commercial_note": "SIN LICENCIA en la Unión Europea, Reino Unido, Corea ni EE. UU. (territorios excluidos). Fuera de ahí: uso comercial permitido hasta 20 M$ de ingresos anuales; hay que mostrar «MiniMax H3» en el producto y no se pueden usar las salidas para entrenar otros modelos. El LoRA turbo es un derivado y sigue la misma licencia.",
+    "commercial_note_en": "NO LICENSE in the European Union, the United Kingdom, South Korea or the USA (excluded territories). Elsewhere: commercial use allowed up to 20 M$ of yearly revenue; \"MiniMax H3\" must be shown in the product and the outputs cannot train other models. The turbo LoRA is a derivative and follows the same license."
+  },
+  {
+    "id": "video-minimax-h3-fl2va-q4",
+    "kind": "video",
+    "name": "MiniMax H3 Primer fotograma (FL2VA, Q4, vídeo con audio · 24 GB de RAM)",
+    "description": "La variante de MiniMax H3 en la que la imagen de la escena es el primer fotograma del clip (no una referencia): el plano arranca exactamente de tu imagen y los sujetos se quedan donde ella los pone, sin salirse de cuadro. Mismos requisitos, mismos 864x480 y 56 fotogramas y los mismos VAE y codificador que MiniMax H3 Ref2VA (no se descargan dos veces); solo cambia el DiT (versión recortada de leejet/MiniMax-H3-GGUF) y el LoRA turbo, que aquí es el de primer fotograma v1.0 de Comfy-Org, de 8 pasos. Medido con la misma imagen y semilla (dos chicas riendo patinando, 864x480, 56 fotogramas): 290 s a 20 pasos, con las dos chicas dentro de cuadro y las caras limpias hasta el final, y 168 s con el LoRA de 8 pasos con una calidad muy parecida (el LoRA de referencia de 4 pasos, 96 s, deformaba las caras). Se usa con defaults.animate.engine: minimax-h3 y first_frame: true (el editor lo pone al elegir «Primer fotograma»). Licencia «other» de MiniMax: léela antes de uso comercial. En una tarjeta de 12 GB cabe a 768x416 (pico de 11,2 GB de VRAM medido en una RTX 4070; el Modo fácil lo hace solo): 108 s con el LoRA de 8 pasos.",
+    "size_bytes": 37407985232,
+    "vram_mb": 14336,
+    "min_ram_gb": 24,
+    "preset": {
+      "steps": 20,
+      "cfg_scale": 1,
+      "resolution": "864x480"
+    },
+    "files": [
+      {
+        "name": "minimax_h3_fl2va_pruned-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/leejet/MiniMax-H3-GGUF/resolve/main/minimax_h3_fl2va_pruned-Q4_K_M.gguf"
+      },
+      {
+        "name": "qwen3vl_32b_minimax_h3-Q4_K_M.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/leejet/MiniMax-H3-GGUF/resolve/main/qwen3vl_32b_minimax_h3-Q4_K_M.gguf"
+      },
+      {
+        "name": "minimax_h3_video_vae_fp16.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors"
+      },
+      {
+        "name": "minimax_h3_audio_vae_fp32.safetensors",
+        "role": "audio_vae",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors"
+      },
+      {
+        "name": "minimax_h3_fl2v_turbo_8step.safetensors",
+        "role": "lora",
+        "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"
+      }
+    ],
+    "name_en": "MiniMax H3 First frame (FL2VA, Q4, video with audio · 24 GB of RAM)",
+    "description_en": "The MiniMax H3 variant where the scene's picture is the first frame of the clip (not a reference): the shot starts exactly from your picture and the subjects stay where it puts them, without leaving the frame. Same requirements, the same 864x480 and 56 frames and the same VAEs and encoder as MiniMax H3 Ref2VA (they are not downloaded twice); only the DiT (the pruned version from leejet/MiniMax-H3-GGUF) and the turbo LoRA change, which here is Comfy-Org's first-frame v1.0, with 8 steps. Measured with the same picture and seed (two girls laughing while skating, 864x480, 56 frames): 290 s at 20 steps, with both girls inside the frame and clean faces to the end, and 168 s with the 8-step LoRA with very similar quality (the 4-step reference LoRA, 96 s, deformed the faces). It is used with defaults.animate.engine: minimax-h3 and first_frame: true (the editor sets it when you choose «First frame»). MiniMax's «other» licence: read it before commercial use. On a 12 GB card it fits at 768x416 (peak of 11.2 GB of VRAM measured on an RTX 4070; Easy mode does it by itself): 108 s with the 8-step LoRA.",
+    "timing": {
+      "seconds": 290,
+      "resolution": "864x480",
+      "steps": 20,
+      "frames": 56,
+      "turbo_seconds": 168,
+      "turbo_steps": 8,
+      "measured": true
+    },
+    "low_vram": {
+      "vram_mb": 11520,
+      "resolution": "768x416"
+    },
+    "commercial": "conditions",
+    "license": "MiniMax H3 Community License",
+    "commercial_note": "SIN LICENCIA en la Unión Europea, Reino Unido, Corea ni EE. UU. (territorios excluidos). Fuera de ahí: uso comercial permitido hasta 20 M$ de ingresos anuales; hay que mostrar «MiniMax H3» en el producto y no se pueden usar las salidas para entrenar otros modelos. El LoRA turbo es un derivado y sigue la misma licencia.",
+    "commercial_note_en": "NO LICENSE in the European Union, the United Kingdom, South Korea or the USA (excluded territories). Elsewhere: commercial use allowed up to 20 M$ of yearly revenue; \"MiniMax H3\" must be shown in the product and the outputs cannot train other models. The turbo LoRA is a derivative and follows the same license."
+  },
+  {
+    "id": "video-ltx-2-3-distilled-q4",
+    "kind": "video",
+    "name": "LTX 2.3 (destilado, Q4, vídeo con audio · 24 GB de RAM)",
+    "description": "Anima la imagen de la escena: es el primer fotograma del clip y el plano se mueve a partir de ella, manteniendo caras, ropa y fondo. Genera además un audio que de momento no se usa (24 fps fijos). Es la versión destilada de LTX-2.3 en GGUF Q4_K_M: solo 8 pasos con cfg 1, y se ejecuta con el sd de siempre, sin ComfyUI ni Python. Los ~26 GB de pesos se leen con --mmap (el motor lo activa solo). Medido con la misma imagen y semilla, 768x416 y 49 fotogramas (2 s): 116 s en una RTX 4070 de 12 GB (pico de 11,1 GB de VRAM, por lo que cabe en una tarjeta de 12 GB con poco margen: cierra lo que use la GPU) y 145 s en una RTX 5060 Ti de 16 GB (que usa hasta 15,3 GB porque aprovecha la memoria libre). La RAM no se ha medido al detalle: se probó con 30 GB; unos 24 GB es lo prudente. Comparado con MiniMax H3 en tres planos de los mismos amigos en un banco (misma imagen, misma semilla), LTX conserva igual las caras, la ropa y el fondo, y mueve algo menos: gestos y sonrisas más contenidos, donde H3 gesticula y mueve más la cabeza; tarda 116 s por plano en la 4070 frente a 168-290 s de H3. Son cinco archivos de unsloth, sin solicitar acceso: el modelo, el codificador Gemma 3 12B (QAT Q4), los dos VAE (vídeo y audio) y los conectores de embeddings. Se usa con defaults.animate.engine: ltx-2.3 (ver docs/SCENES_YAML.md). Licencias: lee la de LTX-2.3 y los términos de Gemma antes de uso comercial.",
+    "size_bytes": 25755924870,
+    "vram_mb": 11520,
+    "min_ram_gb": 24,
+    "preset": {
+      "steps": 8,
+      "cfg_scale": 1,
+      "resolution": "768x416"
+    },
+    "files": [
+      {
+        "name": "ltx-2.3-22b-distilled-1.1-Q4_K_M.gguf",
+        "role": "model",
+        "url": "https://huggingface.co/unsloth/LTX-2.3-GGUF/resolve/main/distilled-1.1/ltx-2.3-22b-distilled-1.1-Q4_K_M.gguf"
+      },
+      {
+        "name": "gemma-3-12b-it-qat-UD-Q4_K_XL.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/unsloth/gemma-3-12b-it-qat-GGUF/resolve/main/gemma-3-12b-it-qat-UD-Q4_K_XL.gguf"
+      },
+      {
+        "name": "ltx-2.3-22b-distilled_video_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/unsloth/LTX-2.3-GGUF/resolve/main/vae/ltx-2.3-22b-distilled_video_vae.safetensors"
+      },
+      {
+        "name": "ltx-2.3-22b-distilled_audio_vae.safetensors",
+        "role": "audio_vae",
+        "url": "https://huggingface.co/unsloth/LTX-2.3-GGUF/resolve/main/vae/ltx-2.3-22b-distilled_audio_vae.safetensors"
+      },
+      {
+        "name": "ltx-2.3-22b-distilled_embeddings_connectors.safetensors",
+        "role": "connectors",
+        "url": "https://huggingface.co/unsloth/LTX-2.3-GGUF/resolve/main/text_encoders/ltx-2.3-22b-distilled_embeddings_connectors.safetensors"
+      }
+    ],
+    "name_en": "LTX 2.3 (distilled, Q4, video with audio · 24 GB of RAM)",
+    "description_en": "Animates the scene's picture: it is the first frame of the clip and the shot moves from it, keeping faces, clothes and background. It also generates audio that is not used for now (fixed 24 fps). It is the distilled LTX-2.3 in GGUF Q4_K_M: only 8 steps at cfg 1, and it runs with the usual sd, with no ComfyUI or Python. The ~26 GB of weights are read with --mmap (the engine enables it). Measured with the same picture and seed, 768x416 and 49 frames (2 s): 116 s on a 12 GB RTX 4070 (peak of 11.1 GB of VRAM, so it fits a 12 GB card with little margin: close whatever uses the GPU) and 145 s on a 16 GB RTX 5060 Ti (which uses up to 15.3 GB because it takes advantage of the free memory). RAM was not measured in detail: it was tested with 30 GB; about 24 GB is the prudent figure. Compared with MiniMax H3 on three shots of the same friends on a bench (same picture, same seed), LTX keeps the faces, clothes and background just as well and moves a little less: more restrained gestures and smiles, where H3 gestures and moves its head more; it takes 116 s per shot on the 4070 against H3's 168-290 s. It is five files from unsloth, with no access request: the model, the Gemma 3 12B encoder (QAT Q4), the two VAEs (video and audio) and the embeddings connectors. It is used with defaults.animate.engine: ltx-2.3 (see docs/SCENES_YAML.md). Licences: read LTX-2.3's and Gemma's terms before commercial use.",
+    "timing": {
+      "seconds": 145,
+      "resolution": "768x416",
+      "steps": 8,
+      "frames": 49,
+      "measured": true
+    },
+    "commercial": "conditions",
+    "license": "LTX-2.x Community License + Gemma Terms",
+    "commercial_note": "Gratis para entidades con menos de 10 M$ de ingresos anuales; por encima hace falta licencia de pago. Hay que declarar que el contenido es generado por IA, no quitar marcas de agua y no hacer deepfakes sin consentimiento. El codificador Gemma añade sus propios términos.",
+    "commercial_note_en": "Free for entities under 10 M$ of yearly revenue; above that a paid license is needed. Content must be disclosed as AI-generated, watermarks kept, and no deepfakes without consent. The Gemma encoder adds its own terms."
+  },
+  {
+    "id": "video-animatediff-sd15-v3",
+    "kind": "video",
+    "name": "AnimateDiff v3 (SD 1.5, movimiento sutil)",
+    "description": "Alternativa ligera a Wan para animar una imagen: añade un movimiento suave y coherente (olas, viento, un retrato que respira) y mantiene la imagen y las caras. Clips de unos 2 s a 512x512. Medido: unos 55 s por clip en una RTX 4070 de 12 GB (pico de 5,6 GB de VRAM) y unos 80 s en una RTX 5060 Ti. Es solo el módulo de movimiento: necesita además un modelo de imagen Stable Diffusion 1.5, que se instala desde la pestaña Imagen (no se descarga otra copia). El movimiento es más tímido que el de Wan: para personas o cámaras que se mueven de verdad, usa Wan. Se usa con defaults.animate.engine: animatediff en scenes.yaml. Pesos de terceros (conversión fp16 de guoyww/animatediff, Apache-2.0).",
+    "size_bytes": 836618008,
+    "vram_mb": 6144,
+    "preset": {
+      "steps": 25,
+      "cfg_scale": 7,
+      "resolution": "512x512"
+    },
+    "files": [
+      {
+        "name": "mm_sd15_v3.safetensors",
+        "role": "motion_module",
+        "url": "https://huggingface.co/conrevo/AnimateDiff-A1111/resolve/main/motion_module/mm_sd15_v3.safetensors"
+      }
+    ],
+    "name_en": "AnimateDiff v3 (SD 1.5, subtle motion)",
+    "description_en": "Light alternative to Wan for animating an image: adds smooth, coherent motion (waves, wind, a breathing portrait) and keeps the image and faces. Clips of about 2 s at 512x512. Measured: about 55 s per clip on a 12 GB RTX 4070 (peak of 5.6 GB of VRAM) and about 80 s on an RTX 5060 Ti. It is only the motion module: it also needs a Stable Diffusion 1.5 image model, which is installed from the Image tab (no other copy is downloaded). The motion is shyer than Wan's: for people or cameras that really move, use Wan. Used with defaults.animate.engine: animatediff in scenes.yaml. Third-party weights (fp16 conversion of guoyww/animatediff, Apache-2.0).",
+    "timing": {
+      "seconds": 70,
+      "resolution": "512x512",
+      "steps": 25,
+      "frames": 16,
+      "measured": true
+    },
+    "commercial": "conditions",
+    "license": "Apache-2.0 (movimiento) + SD 1.5 (OpenRAIL-M)",
+    "commercial_note": "El módulo de movimiento es Apache-2.0, pero se usa con SD 1.5, que lleva OpenRAIL-M.",
+    "commercial_note_en": "The motion module is Apache-2.0, but it runs on SD 1.5, which carries OpenRAIL-M."
+  },
+  {
+    "id": "music-acestep-1-7b-turbo",
+    "kind": "music",
+    "name": "ACE-Step 1.5 (LM 1.7B, turbo)",
+    "description": "Crea canciones completas a partir de un estilo y, si quieres, tu propia letra: voz e instrumental, o solo instrumental, en local y sin Python. Funciona con ACE-Step 1.5 a través de acestep.cpp (ace-lm y ace-synth, que instala scripts/build-acestep.sh). Son cuatro archivos: modelo de lenguaje, codificador de texto, modelo de síntesis (DiT turbo, 8 pasos) y VAE. Medido en una RTX 5060 Ti y una RTX 4070: una pista de 3 minutos tarda unos 11 s en componerse y 9 s en sintetizarse, con un pico de 8,5 GB de VRAM. Los GGUF son una conversión de terceros (Serveurperso) con licencia MIT. Esta versión usa el modelo de lenguaje de 1,7B, la opción equilibrada; el codificador y el VAE se comparten con la versión de 0,6B. Úsalo con defaults.music en scenes.yaml (modo música).",
+    "size_bytes": 5646931456,
+    "vram_mb": 9216,
+    "files": [
+      {
+        "name": "acestep-5Hz-lm-1.7B-Q8_0.gguf",
+        "role": "lm",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-5Hz-lm-1.7B-Q8_0.gguf"
+      },
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "acestep-v15-turbo-Q8_0.gguf",
+        "role": "dit",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-v15-turbo-Q8_0.gguf"
+      },
+      {
+        "name": "vae-BF16.gguf",
+        "role": "vae",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/vae-BF16.gguf"
+      }
+    ],
+    "description_en": "Creates full songs from a style and, if you want, your own lyrics: vocals and instrumental, or instrumental only, locally and without Python. Works with ACE-Step 1.5 through acestep.cpp (ace-lm and ace-synth, installed by scripts/build-acestep.sh). It is four files: language model, text encoder, synthesis model (DiT turbo, 8 steps) and VAE. Measured on an RTX 5060 Ti and an RTX 4070: a 3-minute track takes about 11 s to compose and 9 s to synthesize, with a peak of 8.5 GB of VRAM. The GGUFs are a third-party conversion (Serveurperso) with an MIT licence. This version uses the 1.7B language model, the balanced option; the encoder and the VAE are shared with the 0.6B version. Use it with defaults.music in scenes.yaml (music mode).",
+    "commercial": "yes",
+    "license": "MIT / Apache-2.0"
+  },
+  {
+    "id": "music-acestep-0-6b-turbo",
+    "kind": "music",
+    "name": "ACE-Step 1.5 (LM 0.6B, ligero)",
+    "description": "Crea canciones completas a partir de un estilo y, si quieres, tu propia letra: voz e instrumental, o solo instrumental, en local y sin Python. Funciona con ACE-Step 1.5 a través de acestep.cpp (ace-lm y ace-synth, que instala scripts/build-acestep.sh). Son cuatro archivos: modelo de lenguaje, codificador de texto, modelo de síntesis (DiT turbo, 8 pasos) y VAE. Medido en una RTX 5060 Ti y una RTX 4070: una pista de 3 minutos tarda unos 11 s en componerse y 9 s en sintetizarse, con un pico de 8,5 GB de VRAM. Los GGUF son una conversión de terceros (Serveurperso) con licencia MIT. Esta versión usa el modelo de lenguaje de 0,6B: más pequeño y rápido (unos 2 s para componer), con letras compuestas algo más pobres; si aportas tu propia letra la diferencia no se nota. Úsalo con defaults.music en scenes.yaml (modo música).",
+    "size_bytes": 4380940544,
+    "vram_mb": 9216,
+    "files": [
+      {
+        "name": "acestep-5Hz-lm-0.6B-Q8_0.gguf",
+        "role": "lm",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-5Hz-lm-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "acestep-v15-turbo-Q8_0.gguf",
+        "role": "dit",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-v15-turbo-Q8_0.gguf"
+      },
+      {
+        "name": "vae-BF16.gguf",
+        "role": "vae",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/vae-BF16.gguf"
+      }
+    ],
+    "name_en": "ACE-Step 1.5 (LM 0.6B, light)",
+    "description_en": "Creates full songs from a style and, if you want, your own lyrics: vocals and instrumental, or instrumental only, locally and without Python. Works with ACE-Step 1.5 through acestep.cpp (ace-lm and ace-synth, installed by scripts/build-acestep.sh). It is four files: language model, text encoder, synthesis model (DiT turbo, 8 steps) and VAE. Measured on an RTX 5060 Ti and an RTX 4070: a 3-minute track takes about 11 s to compose and 9 s to synthesize, with a peak of 8.5 GB of VRAM. The GGUFs are a third-party conversion (Serveurperso) with an MIT licence. This version uses the 0.6B language model: smaller and faster (about 2 s to compose), with somewhat poorer composed lyrics; if you supply your own lyrics the difference is not noticeable. Use it with defaults.music in scenes.yaml (music mode).",
+    "commercial": "yes",
+    "license": "MIT / Apache-2.0"
+  },
+  {
+    "id": "music-acestep-4b-turbo",
+    "kind": "music",
+    "name": "ACE-Step 1.5 (LM 4B, mejores letras)",
+    "description": "Crea canciones completas a partir de un estilo y, si quieres, tu propia letra: voz e instrumental, o solo instrumental, en local y sin Python. Funciona con ACE-Step 1.5 a través de acestep.cpp (ace-lm y ace-synth, que instala scripts/build-acestep.sh). Son cuatro archivos: modelo de lenguaje, codificador de texto, modelo de síntesis y VAE. Usa el modelo de lenguaje de 4B (cuantizado Q6_K) con el DiT turbo de 8 pasos: es el que mejor compone las letras y los metadatos cuando solo das un estilo (en las pruebas, el más coherente y con mejores rimas en español). Medido en una RTX 5060 Ti (una pista de 2 minutos): unos 11 s en componerse con un pico de 6,0 GB de VRAM y 7 s en sintetizarse con un pico de 8,4 GB; en una RTX 4070 de 12 GB también cabe. Los GGUF son una conversión de terceros (Serveurperso) con licencia MIT. Cambia solo una pieza respecto al paquete «LM 1.7B, turbo», así que, si ya lo tienes, solo se descarga esa pieza. Úsalo con defaults.music en scenes.yaml (modo música).",
+    "size_bytes": 7113807392,
+    "vram_mb": 9216,
+    "files": [
+      {
+        "name": "acestep-5Hz-lm-4B-Q6_K.gguf",
+        "role": "lm",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-5Hz-lm-4B-Q6_K.gguf"
+      },
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "acestep-v15-turbo-Q8_0.gguf",
+        "role": "dit",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-v15-turbo-Q8_0.gguf"
+      },
+      {
+        "name": "vae-BF16.gguf",
+        "role": "vae",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/vae-BF16.gguf"
+      }
+    ],
+    "name_en": "ACE-Step 1.5 (LM 4B, better lyrics)",
+    "description_en": "Creates full songs from a style and, if you want, your own lyrics: vocals and instrumental, or instrumental only, locally and without Python. Works with ACE-Step 1.5 through acestep.cpp (ace-lm and ace-synth, installed by scripts/build-acestep.sh). It is four files: language model, text encoder, synthesis model and VAE. It uses the 4B language model (Q6_K quantized) with the 8-step turbo DiT: it is the best at composing lyrics and metadata when you only give a style (in testing, the most coherent and with the best rhymes in Spanish). Measured on an RTX 5060 Ti (a 2-minute track): about 11 s to compose with a peak of 6.0 GB of VRAM and 7 s to synthesize with a peak of 8.4 GB; it also fits on a 12 GB RTX 4070. The GGUFs are a third-party conversion (Serveurperso) with an MIT licence. It changes only one piece compared to the “LM 1.7B, turbo” package, so if you already have it, only that piece is downloaded. Use it with defaults.music in scenes.yaml (music mode).",
+    "commercial": "yes",
+    "license": "MIT / Apache-2.0"
+  },
+  {
+    "id": "music-acestep-xl-turbo",
+    "kind": "music",
+    "name": "ACE-Step 1.5 (DiT XL, más calidad de sonido)",
+    "description": "Crea canciones completas a partir de un estilo y, si quieres, tu propia letra: voz e instrumental, o solo instrumental, en local y sin Python. Funciona con ACE-Step 1.5 a través de acestep.cpp (ace-lm y ace-synth, que instala scripts/build-acestep.sh). Son cuatro archivos: modelo de lenguaje, codificador de texto, modelo de síntesis y VAE. Usa el modelo de síntesis XL turbo (4B) con el modelo de lenguaje de 1,7B: más calidad de audio con los mismos 8 pasos, así que sigue siendo rápido. Medido en una RTX 5060 Ti (una pista de 2 minutos): 7-9 s para sintetizar, con un pico de 8,4 GB de VRAM, el mismo que el DiT normal; también cabe en una RTX 4070 de 12 GB. Los GGUF son una conversión de terceros (Serveurperso) con licencia MIT. Cambia solo una pieza respecto al paquete «LM 1.7B, turbo», así que, si ya lo tienes, solo se descarga esa pieza. Úsalo con defaults.music en scenes.yaml (modo música).",
+    "size_bytes": 8403232192,
+    "vram_mb": 9216,
+    "files": [
+      {
+        "name": "acestep-5Hz-lm-1.7B-Q8_0.gguf",
+        "role": "lm",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-5Hz-lm-1.7B-Q8_0.gguf"
+      },
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "acestep-v15-xl-turbo-Q8_0.gguf",
+        "role": "dit",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-v15-xl-turbo-Q8_0.gguf"
+      },
+      {
+        "name": "vae-BF16.gguf",
+        "role": "vae",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/vae-BF16.gguf"
+      }
+    ],
+    "name_en": "ACE-Step 1.5 (DiT XL, higher sound quality)",
+    "description_en": "Creates full songs from a style and, if you want, your own lyrics: vocals and instrumental, or instrumental only, locally and without Python. Works with ACE-Step 1.5 through acestep.cpp (ace-lm and ace-synth, installed by scripts/build-acestep.sh). It is four files: language model, text encoder, synthesis model and VAE. It uses the XL turbo synthesis model (4B) with the 1.7B language model: higher audio quality with the same 8 steps, so it remains fast. Measured on an RTX 5060 Ti (a 2-minute track): 7-9 s to synthesize, with a peak of 8.4 GB of VRAM, the same as the regular DiT; it also fits on a 12 GB RTX 4070. The GGUFs are a third-party conversion (Serveurperso) with an MIT licence. It changes only one piece compared to the “LM 1.7B, turbo” package, so if you already have it, only that piece is downloaded. Use it with defaults.music in scenes.yaml (music mode).",
+    "commercial": "yes",
+    "license": "MIT / Apache-2.0"
+  },
+  {
+    "id": "music-acestep-sft",
+    "kind": "music",
+    "name": "ACE-Step 1.5 (DiT SFT, calidad máxima)",
+    "description": "Crea canciones completas a partir de un estilo y, si quieres, tu propia letra: voz e instrumental, o solo instrumental, en local y sin Python. Funciona con ACE-Step 1.5 a través de acestep.cpp (ace-lm y ace-synth, que instala scripts/build-acestep.sh). Son cuatro archivos: modelo de lenguaje, codificador de texto, modelo de síntesis y VAE. Usa el modelo de síntesis SFT, pensado para la máxima calidad con unos 50 pasos (pon inference_steps: 50 y shift: 1.0 en defaults.music). Medido en una RTX 5060 Ti (una pista de 2 minutos): 10-11 s para sintetizar frente a 6 s del turbo, con un pico de 8,4 GB de VRAM; también cabe en una RTX 4070 de 12 GB. Los GGUF son una conversión de terceros (Serveurperso) con licencia MIT. Cambia solo una pieza respecto al paquete «LM 1.7B, turbo», así que, si ya lo tienes, solo se descarga esa pieza. Úsalo con defaults.music en scenes.yaml (modo música).",
+    "size_bytes": 5646931392,
+    "vram_mb": 9216,
+    "files": [
+      {
+        "name": "acestep-5Hz-lm-1.7B-Q8_0.gguf",
+        "role": "lm",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-5Hz-lm-1.7B-Q8_0.gguf"
+      },
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf"
+      },
+      {
+        "name": "acestep-v15-sft-Q8_0.gguf",
+        "role": "dit",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/acestep-v15-sft-Q8_0.gguf"
+      },
+      {
+        "name": "vae-BF16.gguf",
+        "role": "vae",
+        "url": "https://huggingface.co/Serveurperso/ACE-Step-1.5-GGUF/resolve/main/vae-BF16.gguf"
+      }
+    ],
+    "name_en": "ACE-Step 1.5 (DiT SFT, maximum quality)",
+    "description_en": "Creates full songs from a style and, if you want, your own lyrics: vocals and instrumental, or instrumental only, locally and without Python. Works with ACE-Step 1.5 through acestep.cpp (ace-lm and ace-synth, installed by scripts/build-acestep.sh). It is four files: language model, text encoder, synthesis model and VAE. It uses the SFT synthesis model, designed for maximum quality with about 50 steps (set inference_steps: 50 and shift: 1.0 in defaults.music). Measured on an RTX 5060 Ti (a 2-minute track): 10-11 s to synthesize versus 6 s for the turbo, with a peak of 8.4 GB of VRAM; it also fits on a 12 GB RTX 4070. The GGUFs are a third-party conversion (Serveurperso) with an MIT licence. It changes only one piece compared to the “LM 1.7B, turbo” package, so if you already have it, only that piece is downloaded. Use it with defaults.music in scenes.yaml (music mode).",
+    "commercial": "yes",
+    "license": "MIT / Apache-2.0"
+  },
+  {
+    "id": "music-adapter-chinese-new-year",
+    "kind": "adapter",
+    "name": "LoRA «Año Nuevo chino» (oficial de ACE-Step)",
+    "description": "Adaptador (LoRA) oficial de ACE-Step 1.5 que da a las canciones un sonido de fiesta de Año Nuevo chino: instrumentos tradicionales, percusión festiva y ritmo alegre. Se aplica a todas las canciones del proyecto con defaults.music.adapter (o a una pista con su adapter) y se puede graduar con adapter_scale (1.0 por defecto, menos para un efecto más suave). Son dos archivos en una carpeta (88 MB). Funciona con los modelos de síntesis de 2B (turbo y SFT), no con el XL que es el de por defecto: con este adaptador pon synth_model: acestep-v15-turbo-Q8_0.gguf. Se fusiona en el modelo en menos de un segundo al empezar. Licencia CreativeML OpenRAIL-M (léela antes de un uso comercial): es la del repositorio oficial ACE-Step/ACE-Step-v1.5-chinese-new-year-LoRA.",
+    "size_bytes": 88131174,
+    "files": [
+      {
+        "name": "chinese-new-year/adapter_model.safetensors",
+        "url": "https://huggingface.co/ACE-Step/ACE-Step-v1.5-chinese-new-year-LoRA/resolve/main/adapter_model.safetensors"
+      },
+      {
+        "name": "chinese-new-year/adapter_config.json",
+        "url": "https://huggingface.co/ACE-Step/ACE-Step-v1.5-chinese-new-year-LoRA/resolve/main/adapter_config.json"
+      }
+    ],
+    "name_en": "LoRA “Chinese New Year” (official ACE-Step)",
+    "description_en": "Official ACE-Step 1.5 adapter (LoRA) that gives songs a Chinese New Year festival sound: traditional instruments, festive percussion and a cheerful rhythm. It is applied to all the project's songs with defaults.music.adapter (or to one track with its adapter) and can be graded with adapter_scale (1.0 by default, lower for a softer effect). It is two files in a folder (88 MB). It works with the 2B synthesis models (turbo and SFT), not with the XL, which is the default: with this adapter set synth_model: acestep-v15-turbo-Q8_0.gguf. It is merged into the model in under a second at startup. Licence CreativeML OpenRAIL-M (read it before commercial use): it is that of the official ACE-Step/ACE-Step-v1.5-chinese-new-year-LoRA repository.",
+    "commercial": "unknown",
+    "license": "Sin identificar",
+    "commercial_note": "No se ha podido identificar el repositorio original de este adaptador; el catálogo decía OpenRAIL-M, pero el modelo base ACE-Step es Apache-2.0.",
+    "commercial_note_en": "The original repository of this adapter could not be identified; the catalog said OpenRAIL-M, but the ACE-Step base model is Apache-2.0."
+  },
+  {
+    "id": "voice-en-us-lessac-medium",
+    "kind": "voice",
+    "name": "Piper en_US lessac (medium)",
+    "description": "Narración en inglés de EE. UU., voz neutra de calidad media. Es la que instala get-piper.sh. Solo se usa en modo vídeo.",
+    "starter": true,
+    "size_bytes": 63205000,
+    "files": [
+      {
+        "name": "en_US-lessac-medium.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx"
+      },
+      {
+        "name": "en_US-lessac-medium.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json"
+      }
+    ],
+    "description_en": "US English narration, neutral voice of medium quality. It is the one get-piper.sh installs. Only used in video mode.",
+    "commercial": "unknown",
+    "license": "Blizzard 2013 (sin confirmar)",
+    "commercial_note": "La licencia del conjunto de datos de la voz no se ha podido confirmar.",
+    "commercial_note_en": "The license of the voice's dataset could not be confirmed."
+  },
+  {
+    "id": "voice-en-us-amy-medium",
+    "kind": "voice",
+    "name": "Piper en_US amy (medium)",
+    "description": "Narración en inglés de EE. UU., voz femenina de calidad media. Solo se usa en modo vídeo.",
+    "size_bytes": 63205000,
+    "files": [
+      {
+        "name": "en_US-amy-medium.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx"
+      },
+      {
+        "name": "en_US-amy-medium.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx.json"
+      }
+    ],
+    "description_en": "US English narration, female voice of medium quality. Only used in video mode.",
+    "commercial": "unknown",
+    "license": "Mimic3 / lessac (sin confirmar)",
+    "commercial_note": "Es un ajuste de la voz lessac y su conjunto de datos no tiene licencia confirmada.",
+    "commercial_note_en": "A fine-tune of the lessac voice; its dataset has no confirmed license."
+  },
+  {
+    "id": "voice-es-es-davefx-medium",
+    "kind": "voice",
+    "name": "Piper es_ES davefx (medium)",
+    "description": "Narración en español de España, calidad media. Solo se usa en modo vídeo.",
+    "starter": true,
+    "size_bytes": 63205000,
+    "files": [
+      {
+        "name": "es_ES-davefx-medium.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx"
+      },
+      {
+        "name": "es_ES-davefx-medium.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Spain) narration, medium quality. Only used in video mode.",
+    "commercial": "yes",
+    "license": "CC0"
+  },
+  {
+    "id": "voice-es-mx-claude-high",
+    "kind": "voice",
+    "name": "Piper es_MX claude (high)",
+    "description": "Narración en español de México, calidad alta (más pesada y lenta que las medium). Solo se usa en modo vídeo.",
+    "size_bytes": 63122309,
+    "files": [
+      {
+        "name": "es_MX-claude-high.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/claude/high/es_MX-claude-high.onnx"
+      },
+      {
+        "name": "es_MX-claude-high.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/claude/high/es_MX-claude-high.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Mexico) narration, high quality (heavier and slower than the medium ones). Only used in video mode.",
+    "commercial": "yes",
+    "license": "Apache-2.0",
+    "commercial_note": "Conserva los avisos de copyright y licencia si la redistribuyes. Origen sin verificar.",
+    "commercial_note_en": "Keep the copyright and license notices if you redistribute it. Source not verified."
+  },
+  {
+    "id": "voice-es-ar-daniela-high",
+    "kind": "voice",
+    "name": "Piper es_AR daniela (high)",
+    "description": "Narración en español de Argentina, voz femenina, calidad alta (más pesada y lenta que las medium). Solo se usa en modo vídeo.",
+    "size_bytes": 114199011,
+    "files": [
+      {
+        "name": "es_AR-daniela-high.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_AR/daniela/high/es_AR-daniela-high.onnx"
+      },
+      {
+        "name": "es_AR-daniela-high.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_AR/daniela/high/es_AR-daniela-high.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Argentina) narration, female voice, high quality (heavier and slower than the medium ones). Only used in video mode.",
+    "commercial": "yes",
+    "license": "CC BY-SA 4.0",
+    "commercial_note": "Exige atribución y, en derivados, compartir con la misma licencia.",
+    "commercial_note_en": "Requires attribution and, for derivatives, the same license."
+  },
+  {
+    "id": "voice-es-mx-ald-medium",
+    "kind": "voice",
+    "name": "Piper es_MX ald (medium)",
+    "description": "Narración en español de México, voz masculina, calidad media. Solo se usa en modo vídeo.",
+    "size_bytes": 63201294,
+    "files": [
+      {
+        "name": "es_MX-ald-medium.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/ald/medium/es_MX-ald-medium.onnx"
+      },
+      {
+        "name": "es_MX-ald-medium.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/ald/medium/es_MX-ald-medium.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Mexico) narration, male voice, medium quality. Only used in video mode.",
+    "commercial": "yes",
+    "license": "Unlicense"
+  },
+  {
+    "id": "voice-es-es-carlfm-x-low",
+    "kind": "voice",
+    "name": "Piper es_ES carlfm (x_low)",
+    "description": "Narración en español de España, calidad baja pero muy ligera y rápida (28 MB). Solo se usa en modo vídeo.",
+    "size_bytes": 28130791,
+    "files": [
+      {
+        "name": "es_ES-carlfm-x_low.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx"
+      },
+      {
+        "name": "es_ES-carlfm-x_low.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Spain) narration, low quality but very light and fast (28 MB). Only used in video mode.",
+    "commercial": "yes",
+    "license": "Dominio público"
+  },
+  {
+    "id": "voice-es-es-sharvard-medium",
+    "kind": "voice",
+    "name": "Piper es_ES sharvard (medium)",
+    "description": "Narración en español de España con dos hablantes en un mismo modelo: hombre y mujer (se elige el hablante en la escena). Calidad media. Solo se usa en modo vídeo.",
+    "size_bytes": 76733615,
+    "files": [
+      {
+        "name": "es_ES-sharvard-medium.onnx",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx"
+      },
+      {
+        "name": "es_ES-sharvard-medium.onnx.json",
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx.json"
+      }
+    ],
+    "description_en": "Spanish (Spain) narration with two speakers in one model: a man and a woman (the speaker is picked in the scene). Medium quality. Only used in video mode.",
+    "commercial": "yes",
+    "license": "CC BY 3.0",
+    "commercial_note": "Exige atribución del conjunto de datos Sharvard.",
+    "commercial_note_en": "Requires attribution of the Sharvard dataset."
+  },
+  {
+    "id": "music-heartmula-3b",
+    "kind": "heartmula",
+    "name": "HeartMuLa 3B + HeartCodec (motor opcional, mucha más calidad)",
+    "name_en": "HeartMuLa 3B + HeartCodec (optional engine, much higher quality)",
+    "description": "Los pesos del motor de música HeartMuLa: un modelo de lenguaje de 3.000 millones de parámetros que escribe la canción (voz y acompañamiento) a partir de la letra y unas etiquetas de estilo, y el decodificador HeartCodec que la convierte en audio estéreo de 48 kHz. La calidad es muy superior a la de ACE-Step y la letra se entiende mucho mejor, pero es unas 10 veces más lento (una canción de 2 minutos tarda unos 2 minutos) y solo hace canciones nuevas a partir de letra y estilo: sin referencia de audio, remix ni alargar. Necesita unos 10 GB de memoria de GPU (cabe en una tarjeta de 12 GB) y se ejecuta como un servicio .NET (se instala con scripts/get-services.sh), o en otra máquina cuya dirección pones en Ajustes. Licencia Apache 2.0.",
+    "description_en": "The weights of the HeartMuLa music engine: a language model of 3 billion parameters that writes the song (voice and accompaniment) from the lyrics and a few style tags, and the HeartCodec decoder that turns it into 48 kHz stereo audio. The quality is far above ACE-Step's and the lyrics are understood much better, but it is about 10 times slower (a 2-minute song takes about 2 minutes) and it only makes new songs from lyrics and style: no audio reference, remix or lengthening. It needs about 10 GB of GPU memory (it fits a 12 GB card) and runs as a .NET service (installed with scripts/get-services.sh), or on another machine whose address you put in Settings. Apache 2.0 license.",
+    "size_bytes": 22400063678,
+    "files": [
+      {
+        "name": "config.json",
+        "role": "config",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLaGen/resolve/main/config.json"
+      },
+      {
+        "name": "gen_config.json",
+        "role": "config",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLaGen/resolve/main/gen_config.json"
+      },
+      {
+        "name": "tokenizer.json",
+        "role": "tokenizer",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLaGen/resolve/main/tokenizer.json"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/config.json",
+        "role": "index",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/config.json"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/model-00001-of-00004.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/model-00001-of-00004.safetensors"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/model-00002-of-00004.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/model-00002-of-00004.safetensors"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/model-00003-of-00004.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/model-00003-of-00004.safetensors"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/model-00004-of-00004.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/model-00004-of-00004.safetensors"
+      },
+      {
+        "name": "HeartMuLa-oss-3B/model.safetensors.index.json",
+        "role": "index",
+        "url": "https://huggingface.co/HeartMuLa/HeartMuLa-oss-3B-happy-new-year/resolve/main/model.safetensors.index.json"
+      },
+      {
+        "name": "HeartCodec-oss/config.json",
+        "role": "index",
+        "url": "https://huggingface.co/HeartMuLa/HeartCodec-oss-20260123/resolve/main/config.json"
+      },
+      {
+        "name": "HeartCodec-oss/model-00001-of-00002.safetensors",
+        "role": "codec",
+        "url": "https://huggingface.co/HeartMuLa/HeartCodec-oss-20260123/resolve/main/model-00001-of-00002.safetensors"
+      },
+      {
+        "name": "HeartCodec-oss/model-00002-of-00002.safetensors",
+        "role": "codec",
+        "url": "https://huggingface.co/HeartMuLa/HeartCodec-oss-20260123/resolve/main/model-00002-of-00002.safetensors"
+      },
+      {
+        "name": "HeartCodec-oss/model.safetensors.index.json",
+        "role": "index",
+        "url": "https://huggingface.co/HeartMuLa/HeartCodec-oss-20260123/resolve/main/model.safetensors.index.json"
+      }
+    ],
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "music-diffrhythm2",
+    "kind": "diffrhythm2",
+    "name": "DiffRhythm2 (motor opcional, canciones en inglés en medio minuto)",
+    "name_en": "DiffRhythm2 (optional engine, English songs in half a minute)",
+    "description": "Los pesos del motor de música DiffRhythm2: un modelo de 1.000 millones de parámetros que hace una canción completa con la letra alineada a partir de la letra con etiquetas de estructura y unas palabras de estilo. Una canción de unos 2 minutos y medio tarda unos 30 segundos y necesita unos 8 GB de memoria de GPU (cabe en una tarjeta de 12 GB). Solo lee letras en inglés (y chino): una letra en español sale mal pronunciada, así que el estudio solo ofrece inglés; no hace instrumentales, ni remix, ni covers, ni alargar, ni usa audio de referencia. Se ejecuta como un servicio .NET (se instala con scripts/get-services.sh) con los pesos de esta entrada (unos 9,5 GB: el modelo, su decodificador, dos modelos MuQ y un codificador de texto), o en otra máquina cuya dirección pones en Ajustes. Licencia Apache 2.0.",
+    "description_en": "The weights of the DiffRhythm2 music engine: a model of 1,000 million parameters that makes a full song with the lyrics aligned, from lyrics with structure tags and a few style words. A song of about 2.5 minutes takes about 30 seconds and needs about 8 GB of GPU memory (it fits a 12 GB card). It reads English (and Chinese) lyrics only: Spanish lyrics come out badly pronounced, so the studio offers English only; it makes no instrumentals, remixes, covers or lengthening, and uses no reference audio. It runs as a .NET service (installed with scripts/get-services.sh) with the weights of this entry (about 9.5 GB: the model, its decoder, two MuQ models and a text encoder), or on another machine whose address you put in Settings. Apache 2.0 license.",
+    "size_bytes": 10200000000,
+    "files": [
+      {
+        "name": "config.json",
+        "role": "config",
+        "url": "https://huggingface.co/ASLP-lab/DiffRhythm2/resolve/main/config.json"
+      },
+      {
+        "name": "model.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/ASLP-lab/DiffRhythm2/resolve/main/model.safetensors"
+      },
+      {
+        "name": "decoder.bin",
+        "role": "decoder",
+        "url": "https://huggingface.co/ASLP-lab/DiffRhythm2/resolve/main/decoder.bin"
+      },
+      {
+        "name": "decoder.json",
+        "role": "config",
+        "url": "https://huggingface.co/ASLP-lab/DiffRhythm2/resolve/main/decoder.json"
+      }
+    ],
+    "commercial": "no",
+    "license": "Apache-2.0 + pesos MuQ-MuLan CC-BY-NC",
+    "commercial_note": "El modelo es Apache-2.0, pero depende de los pesos MuQ-MuLan y MuQ, que son CC-BY-NC 4.0 (no comercial).",
+    "commercial_note_en": "The model is Apache-2.0, but it depends on the MuQ-MuLan and MuQ weights, which are CC-BY-NC 4.0 (non-commercial)."
+  },
+  {
+    "id": "transcription-whisper-large-v3-turbo",
+    "kind": "transcription",
+    "name": "Whisper large-v3-turbo (letras de canciones y habla)",
+    "name_en": "Whisper large-v3-turbo (song lyrics and speech)",
+    "description": "El modelo con el que «Sacar de un vídeo o audio» transcribe la letra de una canción: Whisper large-v3-turbo cuantizado (q5_0), de whisper.cpp. Se ejecuta en la CPU, sin tocar las GPU: una canción de 30 segundos tarda unos 10 segundos con 8 hilos. Necesita además el programa whisper-cli (el paquete whisper.cpp, o bash scripts/get-whisper.sh --build). Una voz cantada se transcribe peor que una hablada, sobre todo con instrumentos: separar antes la voz ayuda. Licencia MIT.",
+    "description_en": "The model «Take it from a video or audio» uses to transcribe the lyrics of a song: Whisper large-v3-turbo quantised (q5_0), from whisper.cpp. It runs on the CPU and leaves the GPUs alone: a 30 second song takes about 10 seconds with 8 threads. It also needs the whisper-cli program (the whisper.cpp package, or bash scripts/get-whisper.sh --build). A sung voice is transcribed worse than a spoken one, above all with instruments: separating the voice first helps. MIT licence.",
+    "size_bytes": 574041195,
+    "files": [
+      {
+        "name": "ggml-large-v3-turbo-q5_0.bin",
+        "role": "asr",
+        "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin"
+      }
+    ],
+    "commercial": "yes",
+    "license": "MIT"
+  },
+  {
+    "id": "video-wan-vace-1-3b-motion-control",
+    "kind": "video",
+    "name": "Wan 2.1 VACE 1.3B (mover personas como en otro vídeo)",
+    "name_en": "Wan 2.1 VACE 1.3B (move people like in another video)",
+    "description": "El modelo de la herramienta «Mover como este vídeo» de Editar vídeo: toma el movimiento de las personas de un vídeo y lo aplica a las personas de una imagen, con el fondo de la imagen. Hace clips de 2 segundos (33 fotogramas); tarda unos 330 s en una RTX 5060 Ti y usa unos 5,5 GB de memoria de GPU. Es blando: las personas de la imagen no conservan bien su identidad, y el resultado depende mucho del prompt (describe a las personas y el lugar como los muestra la imagen, con luz natural). No es un modelo de «Crear»: no aparece entre las opciones de generación. Necesita además el servicio de visión (su máscara y su profundidad). Son tres archivos; el VAE y el codificador de texto se comparten con los modelos Wan.",
+    "description_en": "The model of the «Move like this video» tool of Edit video: it takes the movement of the people of a video and applies it to the people of a picture, in the picture's background. It makes clips of 2 seconds (33 frames); it takes about 330 s on an RTX 5060 Ti and uses about 5.5 GB of GPU memory. It is soft: the people of the picture do not keep their identity well, and the result depends a lot on the prompt (describe the people and the place as the picture shows them, with natural lighting). It is not a «Create» model: it is not among the generation options. It also needs the vision service (its mask and its depth). It is three files; the VAE and the text encoder are shared with the Wan models.",
+    "size_bytes": 10606403374,
+    "vram_mb": 6144,
+    "files": [
+      {
+        "name": "wan2.1_vace_1.3B_fp16.safetensors",
+        "role": "model",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/diffusion_models/wan2.1_vace_1.3B_fp16.safetensors"
+      },
+      {
+        "name": "umt5-xxl-encoder-Q8_0.gguf",
+        "role": "text_encoder",
+        "url": "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q8_0.gguf"
+      },
+      {
+        "name": "wan_2.1_vae.safetensors",
+        "role": "vae",
+        "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors"
+      }
+    ],
+    "timing": {
+      "seconds": 317,
+      "resolution": "832x480",
+      "steps": 20,
+      "frames": 33,
+      "measured": true
+    },
+    "commercial": "yes",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "vision-video-edit",
+    "kind": "vision",
+    "name": "Visión para editar vídeo (máscara de personas y profundidad)",
+    "name_en": "Vision for editing video (person mask and depth)",
+    "description": "Los dos modelos pequeños que usa el servicio de visión de las herramientas de edición de vídeo: U²-Net (segmentación de personas), con el que «Quitar fondo» y el reencuadre que sigue a la persona saben dónde está, y Depth Anything V2 Small (profundidad), con el que «Mapa de profundidad» y el control de «Mover como este vídeo» ven la escena en relieve. Se ejecutan en la CPU, sin tocar las GPU: un clip de 10 segundos tarda unos 20 segundos en cada uno. Necesitan el servicio de visión instalado (bash scripts/get-services.sh --only videovision) y arrancado desde Entorno. Son dos archivos.",
+    "description_en": "The two small models the vision service of the video-edit tools uses: U²-Net (person segmentation), which lets «Remove background» and the reframing that follows a person know where they are, and Depth Anything V2 Small (depth), which lets «Depth map» and the control of «Move like this video» see the scene in relief. They run on the CPU and leave the GPUs alone: a 10 second clip takes about 20 seconds with each. They need the vision service installed (bash scripts/get-services.sh --only videovision) and started from the Environment screen. It is two files.",
+    "size_bytes": 275058480,
+    "files": [
+      {
+        "name": "u2net_human_seg.onnx",
+        "role": "person_mask",
+        "url": "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net_human_seg.onnx"
+      },
+      {
+        "name": "depth-anything-v2-small.onnx",
+        "role": "depth",
+        "url": "https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model.onnx"
+      }
+    ],
+    "commercial": "unknown",
+    "commercial_note": "Depth Anything V2 Small es Apache-2.0 sin condiciones. U²-Net es Apache-2.0 y estos pesos los publica el proyecto rembg (MIT), pero no se ha comprobado la licencia del conjunto de datos con el que se entrenó la versión de personas.",
+    "commercial_note_en": "Depth Anything V2 Small is Apache-2.0 with no conditions. U²-Net is Apache-2.0 and these weights are published by the rembg project (MIT), but the licence of the dataset the person version was trained on has not been checked.",
+    "license": "Apache-2.0"
+  }
+]

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Demo prompts — The Lighthouse Shift</title>
+</head>
+<body>
+<h1>The Lighthouse Shift — scene dataset</h1>
+<p>Fixture for the scene importer. Same shape as the real-world datasets this tool targets:
+a <code>data</code> array of <code>[id, title, lora_info, full_prompt]</code> entries, with a shared
+negative prompt interpolated via <code>${NEG}</code>.</p>
+<div id="out"></div>
+<script>
+const NEG = "Negative: studio lighting, glamour, perfect composition, cartoon, CGI, 3d render, text, watermark, blurry.";
+
+const data = [
+  ["intro", "Arrival at dusk", "",
+   `Wide establishing shot of an old stone lighthouse on a cliff at dusk, wet rocks, fog rolling in from the sea, lone keeper in a yellow raincoat walking up the path with a lantern.
+Camera/style: handheld documentary, slight push-in, natural fading light, film grain.
+Dialogue (narrator says): "Nobody chooses the night shift at Saltmarsh Point. The night shift chooses you."
+${NEG}`],
+
+  ["bronze_a", "The logbook", "",
+   `Interior of the lighthouse keeper's room, cramped wooden desk, open logbook with ink notes, brass instruments, a single oil lamp, rain streaking the window behind.
+Camera/style: static close-up, warm tungsten glow, shallow depth of field.
+Dialogue: "Three nights. Three entries. Same words every time: the light went out on its own."
+${NEG}`],
+
+  ["bronze_b", "Climbing the stairs", "",
+   `Spiral iron staircase inside the lighthouse seen from below, keeper's boots on the steps, lantern light sweeping across peeling green paint, long shadows.
+Camera/style: handheld, slow tilt up, cold fluorescent emergency light mixed with lantern warmth.
+${NEG}`],
+
+  ["silver_a", "The lamp room", "",
+   `Lighthouse lamp room, massive Fresnel lens dark and still, keeper's reflection fractured across the glass, storm clouds through the windows, a faint green glow at the horizon.
+Camera/style: slow orbit, high contrast, sensor noise, motion blur on the lens edges.
+Dialogue (she says): "It's not broken. It's listening."
+${NEG}`],
+
+  ["silver_b", "Signal in the fog", "",
+   `Exterior night shot from the gallery railing, thick fog, a second light pulsing far out at sea where no ship should be, the keeper gripping the rail with both hands.
+Camera/style: handheld POV, heavy camera shake from wind, bad white balance, grain.
+Dialogue: "Two short, one long. That's not a ship. That's a name."
+${NEG}`],
+
+  ["outro", "Dawn", "",
+   `Sunrise over a calm sea, the lighthouse lens now lit and turning, the keeper asleep in a chair by the window with the logbook closed on her lap, soft morning light.
+Camera/style: static wide, slow push-out, pastel tones.
+${NEG}`]
+];
+
+// Tiny renderer so the file is also browsable; the importer ignores all of this.
+document.getElementById("out").innerHTML =
+  data.map(([id, title, lora, p]) => `<h3>${id} — ${title}</h3><pre>${p}</pre>`).join("");
+</script>
+</body>
+</html>

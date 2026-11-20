@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 260" width="212" height="260">
+<style>.skin{fill:#ffdcc6;stroke:var(--bg);stroke-width:4}.hair{fill:var(--accent);stroke:var(--bg);stroke-width:4}.hood{fill:var(--fg);stroke:var(--bg);stroke-width:4}.arm{fill:var(--fg);stroke:var(--bg);stroke-width:4}.leg{fill:var(--bg);stroke:var(--fg);stroke-width:4}.band{fill:none;stroke:var(--fg);stroke-width:7;stroke-linecap:round}.cup{fill:var(--accent);stroke:var(--bg);stroke-width:3}.eye{fill:#2a2118}.line{fill:none;stroke:#2a2118;stroke-width:4;stroke-linecap:round}.blush{fill:#ff8fa8;opacity:.55}.expr{display:none}.expr-happy{display:inline}</style>
+<rect class="leg" x="70" y="214" width="22" height="40" rx="9"/><rect class="leg" x="108" y="214" width="22" height="40" rx="9"/>
+<rect class="arm" x="34" y="150" width="20" height="56" rx="10"/><rect class="arm" x="142" y="146" width="62" height="20" rx="10"/>
+<rect class="hood" x="56" y="148" width="88" height="76" rx="22"/>
+<path class="hair" d="M30 92 Q28 28 100 24 Q172 28 170 92 Q170 112 160 120 L40 120 Q30 112 30 92 Z"/>
+<circle class="skin" cx="100" cy="102" r="56"/>
+<path class="hair" d="M44 90 Q60 40 100 44 Q144 40 156 90 Q132 66 100 74 Q70 66 44 90 Z"/>
+<path class="band" d="M40 96 Q100 10 160 96"/><rect class="cup" x="26" y="84" width="20" height="34" rx="9"/><rect class="cup" x="154" y="84" width="20" height="34" rx="9"/>
+<ellipse class="blush" cx="64" cy="118" rx="11" ry="7"/><ellipse class="blush" cx="136" cy="118" rx="11" ry="7"/>
+<g class="expr expr-happy"><path class="line" d="M68 100 Q78 88 88 100"/><path class="line" d="M112 100 Q122 88 132 100"/><path class="line" d="M86 124 Q100 140 114 124"/></g>
+<g class="expr expr-sad"><circle class="eye" cx="78" cy="102" r="7"/><circle class="eye" cx="122" cy="102" r="7"/><path class="line" d="M66 88 L88 94"/><path class="line" d="M134 88 L112 94"/><path class="line" d="M88 136 Q100 124 112 136"/></g>
+<g class="expr expr-surprised"><circle class="eye" cx="78" cy="102" r="10"/><circle class="eye" cx="122" cy="102" r="10"/><ellipse class="line" cx="100" cy="134" rx="8" ry="11"/></g>
+</svg>

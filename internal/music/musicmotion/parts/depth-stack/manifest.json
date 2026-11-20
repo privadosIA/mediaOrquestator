@@ -1,0 +1,3 @@
+{"name":"depth-stack","description":"Translucent plates stacked in perspective that tilt and fan out on every beat","version":1,"cost_ms":85,"levels":["medium","advanced"],
+ "params":[
+  {"name":"count","type":"int","default":5,"min":3,"max":7}]}

@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Tests of the tiers of the music services in scripts/install.sh (openspec plan-services-installation, 1.3). Nothing is built.
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/machine.sh"
+
+INSTALL="$TEST_REPO/scripts/install.sh"
+dry() { out="$(bash "$INSTALL" --dry-run --only services "$@" </dev/null 2>&1)"; st=$?; }
+ask() { local answers="$1"; shift; out="$(printf '%b' "$answers" | IL_FORCE_INTERACTIVE=1 bash "$INSTALL" --only services "$@" 2>&1)"; st=$?; }
+
+machine() { # [gpu lines]: a complete machine with a .NET that can build and run the services
+    sandbox; complete_machine
+    stub dotnet 'case "$1" in --version) echo "8.0.100";; --list-runtimes) echo "Microsoft.AspNetCore.App 8.0.0 [/x]";; esac'
+    fake_repo_file scripts/get-services.sh '#!/usr/bin/env bash
+echo services'
+}
+
+# --- the recommendation follows the cards ------------------------------------------------
+machine   # a 12 GB card and a 16 GB one
+dry
+assert_status "two cards" 0 "$st"
+assert_contains "a 16 GB card: every service" "$out" "bash scripts/get-services.sh --only lionclap,videovision,diffrhythm2,heartmula"
+cleanup_sandbox
+
+machine
+stub nvidia-smi 'echo "0, NVIDIA GeForce RTX 4080 Laptop GPU, 8.9, 12282"'
+dry
+assert_contains "one 12 GB card: one generator" "$out" "bash scripts/get-services.sh --only lionclap,videovision,diffrhythm2"
+assert_not_contains "and not HeartMuLa" "$out" "heartmula"
+cleanup_sandbox
+
+machine
+rm "$T_BIN/nvidia-smi"
+dry
+assert_contains "no NVIDIA card: only the recognition" "$out" "get-services.sh --only lionclap,videovision"
+assert_not_contains "no generator" "$out" "diffrhythm2"
+cleanup_sandbox
+
+# --- --services decides --------------------------------------------------------------------
+machine
+dry --services recognition
+assert_contains "recognition asked for" "$out" "get-services.sh --only lionclap,videovision"
+assert_not_contains "no generator" "$out" "diffrhythm2"
+dry --services=generator
+assert_contains "generator asked for" "$out" "--only lionclap,videovision,diffrhythm2"
+dry --services none
+assert_contains "none is said" "$out" "tier none: nothing asked for"
+assert_not_contains "and nothing runs" "$out" "would run"
+bash "$INSTALL" --dry-run --services nonsense </dev/null >/dev/null 2>&1; st=$?
+assert_status "an unknown tier" 2 "$st"
+cleanup_sandbox
+
+# --- a machine with no GPU builds the CPU flavour ---------------------------------------------------
+machine
+rm "$T_BIN/nvidia-smi"
+# the CPU build is the one a machine with no NVIDIA card gets: install.sh adds --cpu through CPU_BUILD, which only sd's question sets,
+# so the tier is what this test looks at
+dry --services all
+assert_contains "all asked for on a machine with no card" "$out" "--only lionclap,videovision,diffrhythm2,heartmula"
+cleanup_sandbox
+
+# --- the question: Enter takes the recommendation, a name takes that tier -----------------------------
+machine
+ask '\ny\n'
+assert_contains "the question lists the tiers" "$out" "none | recognition"
+assert_contains "and the recommendation" "$out" "Recommended here: all"
+ask 'recognition\ny\n'
+assert_contains "a name is taken" "$out" "get-services.sh --only lionclap,videovision"
+assert_not_contains "and only that" "$out" "heartmula"
+ask 'bogus\ngenerator\ny\n'
+assert_contains "a wrong answer asks again" "$out" "none, recognition, generator or all"
+assert_contains "then the right one counts" "$out" "--only lionclap,videovision,diffrhythm2"
+cleanup_sandbox
+
+# --- --yes takes the recommended tier without asking ---------------------------------------------------
+machine
+out="$(bash "$INSTALL" --yes --only services </dev/null 2>&1)"; st=$?
+assert_contains "the recommended tier is built" "$out" "bash scripts/get-services.sh --only lionclap,videovision,diffrhythm2,heartmula"
+cleanup_sandbox
+
+# --- a tier that is already built is left alone, a bigger one is not --------------------------------------
+machine
+for n in lionclap videovision; do fake_repo_file "bin/services/$n/$n.dll"; done
+dry --services recognition
+assert_contains "already built" "$out" "tier recognition"
+assert_not_contains "no plan for it" "$out" "waiting for"
+assert_not_contains "nothing to run" "$out" "would run"
+dry --services generator
+assert_contains "the bigger tier lacks DiffRhythm2" "$out" "not built: diffrhythm2"
+assert_contains "and builds it" "$out" "--only lionclap,videovision,diffrhythm2"
+cleanup_sandbox
+
+pass_summary

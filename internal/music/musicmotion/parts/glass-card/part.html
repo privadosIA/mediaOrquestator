@@ -1,0 +1,20 @@
+<style>
+#gc{position:absolute;left:50%;top:38vh;width:72vh;margin-left:-36vh;margin-top:-17vh;padding:5vh 5vh 6vh;border-radius:3vh;background:color-mix(in srgb,var(--fg) 9%,transparent);border:.4vh solid color-mix(in srgb,var(--fg) 28%,transparent);box-shadow:0 2vh 6vh rgba(0,0,0,.35)}
+#gc .t{font-family:var(--display);font-weight:900;font-size:8vh;line-height:1.05}
+#gc .b{margin-top:2.5vh;font-size:3.6vh;opacity:.85}
+#gc .bar{margin-top:4vh;height:1vh;border-radius:1vh;background:color-mix(in srgb,var(--fg) 15%,transparent);overflow:hidden}
+#gc .bar i{display:block;height:100%;width:0;background:var(--accent)}
+</style>
+<div id="gc"><div class="t">{{title}}</div><div class="b">{{body}}</div><div class="bar"><i></i></div></div>
+<script>
+(function(){
+  var card = document.getElementById('gc'), fill = card.querySelector('.bar i');
+  window.__partSeek = function(t, b){
+    var p = b.number < 0 ? 1 : b.position, lift = Math.pow(1 - p, 3);
+    card.style.transform = 'translateY(' + (-1.2 * lift) + 'vh) scale(' + (1 + 0.035 * lift) + ')';
+    card.style.boxShadow = '0 ' + (2 + 2 * lift) + 'vh ' + (6 + 4 * lift) + 'vh rgba(0,0,0,.35)';
+    card.style.borderColor = 'color-mix(in srgb,var(--accent) ' + Math.round(20 + 70 * lift) + '%,color-mix(in srgb,var(--fg) 28%,transparent))';
+    fill.style.width = (Math.max(0, Math.min(1, t / (window.__motionDuration || 1))) * 100) + '%';
+  };
+})();
+</script>

@@ -1,0 +1,43 @@
+[I] loading diffusion model from 'models/video/Wan2.2-TI2V-5B-Q4_K_S.gguf' --- diffusion_engine.cpp:733
+[I] load models/video/Wan2.2-TI2V-5B-Q4_K_S.gguf using gguf format --- model_loader.cpp:215
+[I] loading t5xxl from 'models/video/umt5-xxl-encoder-Q4_K_S.gguf' --- diffusion_engine.cpp:775
+[I] load models/video/umt5-xxl-encoder-Q4_K_S.gguf using gguf format --- model_loader.cpp:215
+[I] loading vae from 'models/video/wan2.2_vae.safetensors' --- diffusion_engine.cpp:804
+[I] load models/video/wan2.2_vae.safetensors using safetensors format --- model_loader.cpp:221
+[I] Version: Wan 2.2 TI2V  --- diffusion_engine.cpp:996
+[I] Weight type stat:                      f32: 74   |     f16: 720  |    q4_K: 427  |    q5_K: 41   |    q6_K: 1     --- diffusion_engine.cpp:1524
+[I] Conditioner weight type stat:          f32: 73   |    q4_K: 161  |    q5_K: 7    |    q6_K: 1     --- diffusion_engine.cpp:1525
+[I] Diffusion model weight type stat:      f32: 1    |     f16: 524  |    q4_K: 266  |    q5_K: 34    --- diffusion_engine.cpp:1526
+[I] VAE weight type stat:                  f16: 196   --- diffusion_engine.cpp:1527
+[I] Wan2.2-TI2V-5B --- wan.hpp:967
+[I] using VAE for encoding / decoding --- model_builders.cpp:638
+[I] Using flash attention in the diffusion model --- diffusion_engine.cpp:1203
+[I] total params memory size = 7649.17MB (VRAM 0.00MB, RAM 7649.17MB): text_encoders 3329.50MB(RAM), diffusion_model 2975.43MB(RAM), vae 1344.24MB(RAM), controlnet 0.00MB(N/A), extensions 0.00MB(N/A) --- diffusion_engine.cpp:1328
+[I] running in FLOW mode --- diffusion_engine.cpp:1468
+[I] preprocess init[0]: 768x768 crop=(0,0,768,768) resize=512x512 pad=(0,0) output=512x512 filter=auto(0) antialias=false --- image_preprocess.cpp:266
+[I] get_sigmas with discrete scheduler --- denoiser.hpp:1129
+[I] sampling using Euler method --- request.cpp:422
+[I] IMG2VID --- video.cpp:957
+[I] wan_vae build cached graph cut plan done (taking 0 ms) --- ggml_graph_cut.cpp:1032
+  |#####                                             | 7/82 - 8.88MB/s[K  |##################################################| 82/82 - 1.37GB/s[K
+[I] loading tensors completed, taking 0.20s (read: 0.06s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.00s) --- model_loader.cpp:1381
+  |=====>                                            | 1/9 - 2.16it/s[K  |===========>                                      | 2/9 - 31.25it/s[K  |================>                                 | 3/9 - 31.25it/s[K  |======================>                           | 4/9 - 31.25it/s[K  |===========================>                      | 5/9 - 32.26it/s[K  |=================================>                | 6/9 - 31.25it/s[K  |======================================>           | 7/9 - 31.25it/s[K  |============================================>     | 8/9 - 31.25it/s[K  |==================================================| 9/9 - 32.26it/s[K
+[I] encode_first_stage completed, taking 721 ms --- video.cpp:985
+[I] t5 build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |##                                                | 7/242 - 0.00MB/s[K  |####################                              | 96/242 - 4.09GB/s[K  |#######################################           | 186/242 - 4.38GB/s[K  |##################################################| 242/242 - 4.50GB/s[K
+[I] loading tensors completed, taking 0.72s (read: 0.56s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.00s) --- model_loader.cpp:1381
+[I] get_learned_condition completed, taking 2.18s --- video.cpp:1212
+[I] generate_video 512x512x17 --- video.cpp:1612
+[I] Wan2.2-TI2V-5B build cached graph cut plan done (taking 2 ms) --- ggml_graph_cut.cpp:1032
+  |#                                                 | 9/825 - 5.86MB/s[K  |###################                               | 306/825 - 4.67GB/s[K  |####################################              | 591/825 - 4.70GB/s[K  |##################################################| 825/825 - 4.75GB/s[K
+[I] loading tensors completed, taking 0.61s (read: 0.57s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.00s) --- model_loader.cpp:1381
+  |======>                                           | 1/8 - 2.14s/it[K  |============>                                     | 2/8 - 1.66it/s[K  |==================>                               | 3/8 - 1.66it/s[K  |=========================>                        | 4/8 - 1.66it/s[K  |===============================>                  | 5/8 - 1.66it/s[K  |=====================================>            | 6/8 - 1.66it/s[K  |===========================================>      | 7/8 - 1.66it/s[K  |==================================================| 8/8 - 1.65it/s[K
+[I] sampling completed, taking 6.37s --- video.cpp:1712
+[I] generating latent video completed, taking 6.37s --- video.cpp:1856
+[I] wan_vae build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |#####                                             | 9/110 - 0.00MB/s[K  |#####################################             | 80/110 - 2.97GB/s[K  |##################################################| 110/110 - 2.58GB/s[K
+[I] loading tensors completed, taking 0.40s (read: 0.25s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.00s) --- model_loader.cpp:1381
+  |=====>                                            | 1/9 - 2.55s/it[K  |===========>                                      | 2/9 - 1.80s/it[K  |================>                                 | 3/9 - 1.80s/it[K  |======================>                           | 4/9 - 1.80s/it[K  |===========================>                      | 5/9 - 1.80s/it[K  |=================================>                | 6/9 - 1.80s/it[K  |======================================>           | 7/9 - 1.80s/it[K  |============================================>     | 8/9 - 1.80s/it[K  |==================================================| 9/9 - 1.80s/it[K
+[I] decode_first_stage completed, taking 16.99s --- video.cpp:1243
+[I] generate_video completed in 26.33s --- video.cpp:1944
+[I] save result video to 'out/clip.avi' --- main.cpp:547

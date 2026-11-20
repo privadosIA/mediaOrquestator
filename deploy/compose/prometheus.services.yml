@@ -1,0 +1,12 @@
+# Prometheus of the stack without the server (compose.services.yaml): it reads the metrics of the server that runs on this machine, through
+# host.docker.internal, with its token (the same secret the server takes its token from). The server must listen on an address the containers can
+# reach (scripts/serve.sh listens on 0.0.0.0:4666; `serve --addr 127.0.0.1:4666` is not reachable from a container).
+global:
+  scrape_interval: 30s
+scrape_configs:
+  - job_name: mediaorquestator
+    metrics_path: /api/metrics
+    authorization:
+      credentials_file: /run/secrets/orchestrator_token
+    static_configs:
+      - targets: ["host.docker.internal:4666"]

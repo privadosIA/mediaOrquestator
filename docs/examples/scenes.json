@@ -1,0 +1,5 @@
+[
+  ["farol", "El faro", "", "A lighthouse on a rocky coast at dawn, soft pink light, calm sea\nDialogue: \"Cada mañana, el faro despierta antes que el pueblo.\"\nNegative: blurry, text, watermark\nAdult: no"],
+  ["barca", "La barca", "", "A small wooden fishing boat leaving the harbour, gulls overhead\nMotion: the boat rocks gently and the water ripples\nSilence: 3\nNegative: blurry, text, watermark"],
+  ["cena", "La cena", "", "A family eating together at a long table, warm lamp light\nDialogue: \"Por la noche, todos vuelven a casa.\"\nSpeed: 0.9\nSeed: 7\nNegative: blurry, text, watermark"]
+]

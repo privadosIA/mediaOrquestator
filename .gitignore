@@ -1,0 +1,27 @@
+/bin/
+/models
+/models/
+/voices/
+/tmp/
+/out/
+/projects/
+/prompts/
+.orchestrator/*.db*
+/third_party/*
+!/third_party/go.mod
+
+# local tooling and test output
+/.orchestrator/
+/.claude/
+/.agents/
+/skills-lock.json
+/cmd/orchestrator/orchestrator
+__pycache__/
+*.pyc
+/.orchestrator/services/
+
+# The Compose stack: its environment and the folders it keeps its files in
+/.env
+/.env.*
+!/.env.example
+/compose-data/

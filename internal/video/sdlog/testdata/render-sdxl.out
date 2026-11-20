@@ -1,0 +1,52 @@
+[I] loading model from 'models/sd_xl_base_1.0.safetensors' --- diffusion_engine.cpp:726
+[I] load models/sd_xl_base_1.0.safetensors using safetensors format --- model_loader.cpp:221
+[I] Version: SDXL  --- diffusion_engine.cpp:996
+[I] auto-fit plan: --- backend_fit.cpp:323
+[I]   devices: --- backend_fit.cpp:324
+[I]     CUDA0        NVIDIA GeForce RTX 5060 Ti       free  15792 MiB, budget  15280 MiB --- backend_fit.cpp:326
+[I]     RAM          free  28105 MiB, params budget  25294 MiB --- backend_fit.cpp:333
+[I]   compute-device weight cache priority: diffusion > te > vae --- backend_fit.cpp:336
+[I]   components (params: compute device -> RAM -> other GPU -> disk): --- backend_fit.cpp:337
+[I]     DiT          params   4897 MiB, compute reserve  2048 MiB -> compute CUDA0, params CUDA0 --- backend_fit.cpp:346
+[I]     Conditioner  params   1559 MiB, compute reserve  2048 MiB -> compute CUDA0, params CUDA0 --- backend_fit.cpp:346
+[I]     VAE          params    159 MiB, compute reserve  1024 MiB -> compute CUDA0, params CUDA0 --- backend_fit.cpp:346
+[I] auto-fit: --backend "diffusion=CUDA0,te=CUDA0,vae=CUDA0" --- backend_fit.cpp:474
+[I] Weight type stat:                      f16: 2515  --- diffusion_engine.cpp:1524
+[I] Conditioner weight type stat:          f16: 587   --- diffusion_engine.cpp:1525
+[I] Diffusion model weight type stat:      f16: 1680  --- diffusion_engine.cpp:1526
+[I] VAE weight type stat:                  f16: 248   --- diffusion_engine.cpp:1527
+[I] using VAE for encoding / decoding --- model_builders.cpp:638
+[I] vae decoder: ch = 128 --- auto_encoder_kl.hpp:529
+[W] No valid VAE specified with --vae or --force-sdxl-vae-conv-scale flag set, using Conv2D scale 0.031 --- model_builders.cpp:619
+[I] total params memory size = 6624.11MB (VRAM 6624.11MB, RAM 0.00MB): text_encoders 1564.36MB(VRAM), diffusion_model 4900.07MB(VRAM), vae 159.68MB(VRAM), controlnet 0.00MB(N/A), extensions 0.00MB(N/A) --- diffusion_engine.cpp:1328
+[I] running in eps-prediction mode --- diffusion_engine.cpp:1448
+[I] generate_image 768x768 --- image.cpp:814
+[I] get_sigmas with discrete scheduler --- denoiser.hpp:1129
+[I] sampling using Euler method --- request.cpp:422
+[I] clip build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |#                                                 | 3/178 - 0.00MB/s[K  |##################################################| 178/178 - 1.07GB/s[K
+[I] loading tensors completed, taking 0.20s (read: 0.04s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.02s) --- model_loader.cpp:1381
+[I] clip build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |#                                                 | 7/374 - 0.00MB/s[K  |###################################               | 257/374 - 4.11GB/s[K  |##################################################| 374/374 - 3.12GB/s[K
+[I] loading tensors completed, taking 0.40s (read: 0.18s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.09s) --- model_loader.cpp:1381
+[I] clip build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |###########################                       | 8/15 - 0.00MB/s[K  |##################################################| 15/15 - 201.30MB/s[K
+[I] loading tensors completed, taking 0.20s (read: 0.00s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.00s) --- model_loader.cpp:1381
+[I] clip build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+[I] get_learned_condition completed, taking 0.98s --- image.cpp:529
+[I] generating image: 1/1 - seed 11 --- image.cpp:866
+[I] unet build cached graph cut plan done (taking 5 ms) --- ggml_graph_cut.cpp:1032
+  |#                                                 | 8/1680 - 0.00MB/s[K  |############                                      | 392/1680 - 4.23GB/s[K  |#####################                             | 672/1680 - 4.46GB/s[K  |############################                      | 937/1680 - 4.51GB/s[K  |####################################              | 1202/1680 - 4.48GB/s[K  |###########################################       | 1443/1680 - 4.41GB/s[K  |##################################################| 1680/1680 - 3.97GB/s[K
+[I] loading tensors completed, taking 1.20s (read: 0.65s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.40s) --- model_loader.cpp:1381
+  |======>                                           | 1/8 - 1.61s/it[K  |============>                                     | 2/8 - 2.57it/s[K  |==================>                               | 3/8 - 2.57it/s[K  |=========================>                        | 4/8 - 2.57it/s[K  |===============================>                  | 5/8 - 2.56it/s[K  |=====================================>            | 6/8 - 2.57it/s[K  |===========================================>      | 7/8 - 2.56it/s[K  |==================================================| 8/8 - 2.56it/s[K
+[I] sampling completed, taking 4.34s --- image.cpp:899
+[I] generating 1 latent images completed, taking 4.34s --- image.cpp:911
+[I] decoding 1 latents --- image.cpp:554
+[I] vae build cached graph cut plan done (taking 1 ms) --- ggml_graph_cut.cpp:1032
+  |###                                               | 8/140 - 35.16MB/s[K  |##################################################| 140/140 - 467.30MB/s[K
+[I] loading tensors completed, taking 0.20s (read: 0.03s, memcpy: 0.00s, convert: 0.00s, copy_to_backend: 0.01s) --- model_loader.cpp:1381
+[I] latent 1 decoded, taking 0.73s --- image.cpp:620
+[I] decode_first_stage completed, taking 0.73s --- image.cpp:624
+[I] generate_image completed in 6.06s --- image.cpp:1050
+[I] save result image 0 to 'out/a.png' (success) --- main.cpp:497
+[I] 1/1 images saved --- main.cpp:573

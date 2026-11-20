@@ -1,0 +1,27 @@
+<style>
+#tm{position:absolute;left:50%;top:9vh;width:104vh;margin-left:-52vh;border-radius:2vh;overflow:hidden;background:color-mix(in srgb,var(--bg) 82%,var(--fg));border:.35vh solid color-mix(in srgb,var(--fg) 25%,transparent);font-family:var(--body)}
+#tm .bar{display:flex;align-items:center;gap:1.4vh;padding:2vh 3vh;background:color-mix(in srgb,var(--fg) 10%,transparent);font-size:2.8vh;opacity:.9}
+#tm .bar i{width:2vh;height:2vh;border-radius:50%;background:color-mix(in srgb,var(--fg) 40%,transparent)}
+#tm .bar i:first-child{background:var(--accent)}
+#tm .body{padding:3vh;min-height:44vh;font-size:4.6vh;line-height:1.5}
+#tm .row{white-space:pre;overflow:hidden}
+#tm .cur{display:inline-block;width:.55em;height:1em;vertical-align:-.12em;background:var(--accent)}
+</style>
+<div id="tm"><div class="bar"><i></i><i></i><i></i><span>{{title}}</span></div><div class="body"></div></div>
+<script>
+(function(){
+  var lines = String(window.__params.lines).split('|'), body = document.querySelector('#tm .body'), rows = [];
+  lines.forEach(function(l){ var r = document.createElement('div'); r.className = 'row'; r.textContent = l; body.appendChild(r); rows.push(r); });
+  var cur = document.createElement('span'); cur.className = 'cur';
+  window.__partSeek = function(t, b){
+    var shown = Math.min(rows.length, Math.max(1, b.number + 2));      // one more line on every beat
+    rows.forEach(function(r, i){
+      r.style.display = i < shown ? 'block' : 'none';
+      r.style.color = r.textContent.charAt(0) === '$' ? 'var(--accent)' : 'var(--fg)';
+    });
+    var last = rows[shown - 1];
+    if (cur.parentNode !== last) last.appendChild(cur);
+    cur.style.opacity = (b.position < 0.5 || b.number < 0) ? '1' : '0.15';
+  };
+})();
+</script>

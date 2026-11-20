@@ -1,0 +1,12 @@
+{
+  "name": "grain",
+  "description": "Film grain over the frame and three slow bokeh discs that drift: seeded, so the same moment is always the same picture. Put it on a layer from 0 to the end of the song",
+  "version": 1,
+  "cost_ms": 35,
+  "levels": ["simple", "medium", "advanced"],
+  "manual": true,
+  "params": [
+    {"name": "intensity", "type": "number", "default": 0.35, "min": 0, "max": 1},
+    {"name": "bokeh", "type": "int", "default": 3, "min": 0, "max": 6}
+  ]
+}

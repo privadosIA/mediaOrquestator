@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 250" width="160" height="250">
+<style>.coat{fill:var(--fg);stroke:var(--bg);stroke-width:4}.sleeve{fill:var(--fg);stroke:var(--bg);stroke-width:4}.skin{fill:#f0c8a0;stroke:var(--bg);stroke-width:4}.hair{fill:#2a2118}.line{fill:none;stroke:#2a2118;stroke-width:4;stroke-linecap:round}.lens{fill:#ffffff88;stroke:#2a2118;stroke-width:4}.leg{fill:#33384a}.expr{display:none}.expr-neutral{display:inline}</style>
+<rect class="leg" x="52" y="196" width="22" height="48" rx="6"/><rect class="leg" x="86" y="196" width="22" height="48" rx="6"/>
+<rect class="sleeve" x="30" y="108" width="20" height="70" rx="9"/><rect class="sleeve" x="110" y="52" width="20" height="70" rx="9" transform="rotate(-20 120 118)"/>
+<rect class="coat" x="42" y="100" width="76" height="106" rx="14"/>
+<rect x="76" y="100" width="8" height="106" fill="var(--bg)" opacity=".35"/>
+<circle class="skin" cx="80" cy="64" r="36"/>
+<path class="hair" d="M44 56 L52 22 L62 44 L72 14 L82 42 L94 12 L100 42 L112 22 L116 56 Q80 30 44 56 Z"/>
+<circle class="lens" cx="66" cy="66" r="11"/><circle class="lens" cx="94" cy="66" r="11"/><path class="line" d="M77 66 L83 66"/>
+<g class="expr expr-neutral"><path class="line" d="M68 88 L92 88"/></g>
+<g class="expr expr-happy"><path class="line" d="M64 84 Q80 100 96 84"/></g>
+<g class="expr expr-worried"><path class="line" d="M66 94 Q80 82 94 94"/><path class="line" d="M56 48 L70 54"/><path class="line" d="M104 48 L90 54"/></g>
+</svg>

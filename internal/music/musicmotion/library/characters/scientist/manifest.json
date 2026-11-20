@@ -1,0 +1,23 @@
+{
+ "name": "scientist",
+ "description": "A scientist in a white coat with spiky hair and glasses",
+ "version": 1,
+ "width": 160,
+ "height": 250,
+ "anchor": {
+  "x": 0.5,
+  "y": 1.0
+ },
+ "poses": {
+  "idle": "idle.svg",
+  "wave": "wave.svg",
+  "point": "point.svg"
+ },
+ "expressions": [
+  "neutral",
+  "happy",
+  "worried"
+ ],
+ "default_pose": "idle",
+ "default_expression": "neutral"
+}

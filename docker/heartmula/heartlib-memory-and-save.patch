@@ -1,0 +1,40 @@
+diff --git a/src/heartlib/pipelines/music_generation.py b/src/heartlib/pipelines/music_generation.py
+index 1bee069..7cca895 100644
+--- a/src/heartlib/pipelines/music_generation.py
++++ b/src/heartlib/pipelines/music_generation.py
+@@ -297,6 +297,13 @@ class HeartMuLaGenPipeline:
+         frames = []
+ 
+         bs_size = 2 if cfg_scale != 1.0 else 1
++        # Local change: the backbone allocates its key/value cache for 8192 tokens whatever the song
++        # asked for (about 2 GB with the guidance batch). Size it for this song: the prompt, one frame per 80 ms
++        # of audio and a small margin. This is what lets the language model fit a 12 GB card.
++        original = getattr(self.mula, "_original_backbone_max_seq_len", None) or self.mula.backbone.max_seq_len
++        self.mula._original_backbone_max_seq_len = original
++        needed = int(prompt_tokens.shape[-2]) + max_audio_length_ms // 80 + 64
++        self.mula.backbone.max_seq_len = min(original, needed)
+         self.mula.setup_caches(bs_size)
+         with torch.autocast(device_type=self.mula_device.type, dtype=self.mula_dtype):
+             curr_token = self.mula.generate_frame(
+@@ -356,7 +363,20 @@ class HeartMuLaGenPipeline:
+         frames = model_outputs["frames"].to(self.codec_device)
+         wav = self.codec.detokenize(frames)
+         self._unload()
+-        torchaudio.save(save_path, wav.to(torch.float32).cpu(), 48000)
++        # Local change: torchaudio 2.10 saves through torchcodec, which does not load against the
++        # system ffmpeg 9. Write the samples with soundfile and let ffmpeg make the mp3.
++        import subprocess
++
++        import soundfile as sf
++
++        samples = wav.to(torch.float32).cpu().numpy().T  # (samples, channels)
++        if save_path.lower().endswith(".mp3"):
++            tmp = save_path[:-4] + ".wav"
++            sf.write(tmp, samples, 48000)
++            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", tmp, "-codec:a", "libmp3lame", "-b:a", "192k", save_path], check=True)
++            os.remove(tmp)
++        else:
++            sf.write(save_path, samples, 48000)
+ 
+     def __call__(self, inputs: Dict[str, Any], **kwargs):
+         preprocess_kwargs, forward_kwargs, postprocess_kwargs = (

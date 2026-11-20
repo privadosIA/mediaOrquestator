@@ -1,0 +1,9 @@
+{
+  "name": "scene-example",
+  "description": "A verse drawn as one picture: a big ring (a third of the frame) breathes with the beat, each word of the line rises into the ring at the time it is sung and the keyword takes the accent",
+  "version": 1,
+  "cost_ms": 70,
+  "levels": ["simple", "medium", "advanced"],
+  "verse": "own",
+  "params": []
+}

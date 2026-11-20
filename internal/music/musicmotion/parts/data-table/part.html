@@ -1,0 +1,27 @@
+<style>
+#dt{position:absolute;left:50%;top:9vh;width:112vh;margin-left:-56vh;border-radius:2.2vh;overflow:hidden;background:color-mix(in srgb,var(--bg) 80%,var(--fg) 8%);border:.35vh solid color-mix(in srgb,var(--fg) 22%,transparent);font-family:var(--body)}
+#dt table{width:100%;border-collapse:collapse;font-size:4vh}
+#dt th{text-align:left;padding:2vh 3.4vh;font-size:3vh;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb,var(--fg) 60%,transparent);border-bottom:.35vh solid color-mix(in srgb,var(--fg) 22%,transparent)}
+#dt td{padding:1.8vh 3.4vh;border-bottom:.2vh solid color-mix(in srgb,var(--fg) 10%,transparent)}
+#dt tr.row{display:none}
+#dt tr.row.on{display:table-row}
+#dt tr.hl td{background:color-mix(in srgb,var(--accent) 24%,transparent);color:var(--accent);font-weight:700}
+</style>
+<div id="dt"><table><thead><tr><th scope="col"></th></tr></thead><tbody></tbody></table></div>
+<script>
+(function(){
+  var P = window.__params, head = document.querySelector('#dt thead tr'), body = document.querySelector('#dt tbody');
+  head.textContent = '';   // the markup carries one empty header; the real ones come from the columns
+  String(P.columns).split('|').forEach(function(c){ var th = document.createElement('th'); th.textContent = c; head.appendChild(th); });
+  var rows = [];
+  String(P.rows).split(';').filter(function(r){ return r.trim() !== ''; }).forEach(function(r, i){
+    var tr = document.createElement('tr'); tr.className = 'row' + (i + 1 === P.highlight ? ' hl' : '');
+    r.split('|').forEach(function(c){ var td = document.createElement('td'); td.textContent = c; tr.appendChild(td); });
+    body.appendChild(tr); rows.push(tr);
+  });
+  window.__partSeek = function(t, b){
+    var at = b.number < 0 ? 0 : b.number + b.position, shown = Math.min(rows.length, Math.floor(at));   // one more row on every beat
+    rows.forEach(function(r, i){ r.classList.toggle('on', i < shown); });
+  };
+})();
+</script>

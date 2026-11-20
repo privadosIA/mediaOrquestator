@@ -1,0 +1,362 @@
+# mediaOrquestator without the server: everything it works with as Compose services, the server itself running on this machine (bin/orchestrator).
+# The same pieces as compose.yaml (its MySQL, the music generators, Ollama, Redis, Loki, Prometheus and Grafana), minus the server, the migration and the
+# installer: those are what compose.yaml adds to run the server inside an image. Use one file or the other, not both at once (same project name, same
+# volumes and the same fixed subnet).
+#
+#   bash scripts/compose-init.sh                          # makes .env with generated secrets (shared with compose.yaml)
+#   docker compose -f compose.services.yaml up -d         # MySQL, Prometheus and Grafana, and the profiles chosen in COMPOSE_PROFILES
+#   MO_DB_PASSWORD=... orchestrator data migrate --driver mysql --host 127.0.0.1 --database mediaorquestator --user mo     # the schema (the server never migrates)
+#   scripts/serve.sh                                      # the server, on this machine, reachable by Prometheus (0.0.0.0:4666)
+#
+# Because the server is outside, every piece is PUBLISHED on this machine (on BIND, 127.0.0.1 by default) at the port it has in its own variable, and the
+# server is pointed at those addresses in Settings or by environment (docs/COMPOSE.md, "The stack without the server"). Prometheus reaches the server
+# through host.docker.internal, so the server must listen on an address the containers can reach: scripts/serve.sh does (0.0.0.0), `serve --addr
+# 127.0.0.1:4666` does not.
+#
+# What it leaves out besides the server: the dashboard (dashboards-lab) and the .NET services, as in compose.yaml. The installer is not here either: with
+# the server on the host the programs are installed with scripts/install.sh.
+
+name: mediaorquestator
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+# The user every service that writes to a host folder runs as, so that nothing in them ends up owned by root.
+x-user: &user "${UID:-1000}:${GID:-1000}"
+
+# What the stack cannot start without: a variable that is empty or missing stops `docker compose up` before anything starts, naming it. The example
+# environment has these empty on purpose; scripts/compose-init.sh fills them with generated values.
+x-required:
+  mysql_root_password: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  mo_db_password: ${MO_DB_PASSWORD:?set MO_DB_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  grafana_db_password: ${GRAFANA_DB_PASSWORD:?set GRAFANA_DB_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  grafana_ro_password: ${GRAFANA_RO_PASSWORD:?set GRAFANA_RO_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  grafana_admin_password: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  music_token: ${MUSIC_TOKEN:?set MUSIC_TOKEN in .env (bash scripts/compose-init.sh makes it)}
+  redis_password: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env (bash scripts/compose-init.sh makes it)}
+  orchestrator_token: ${ORCHESTRATOR_TOKEN:?set ORCHESTRATOR_TOKEN in .env (bash scripts/compose-init.sh makes it)}
+
+services:
+  # ─── The database: the one database server of the stack ─────────────────
+  mysql:
+    image: mysql:8.4
+    restart: "no"
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: ${MO_DB_NAME:-mediaorquestator}
+      MYSQL_USER: ${MO_DB_USER:-mo}
+      MYSQL_PASSWORD_FILE: /run/secrets/mo_db_password
+    secrets: [mysql_root_password, mo_db_password]
+    # published for the server on this machine (its Settings: database, host 127.0.0.1)
+    ports:
+      - "${BIND:-127.0.0.1}:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$(cat /run/secrets/mysql_root_password)\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    security_opt: ["no-new-privileges:true"]
+
+  # Grafana's own schema and its read-only user on the whole schema of the server, created (and their passwords updated) from .env on every start.
+  # Neither needs a table to exist, so this does not wait for the migration.
+  mysql-users:
+    image: mysql:8.4
+    restart: "no"
+    depends_on:
+      mysql: {condition: service_healthy}
+    environment:
+      MO_DB_NAME: ${MO_DB_NAME:-mediaorquestator}
+    secrets: [mysql_root_password, grafana_db_password, grafana_ro_password]
+    volumes:
+      - ./deploy/compose/mysql/users.sh:/users.sh:ro
+    entrypoint: ["sh", "/users.sh"]
+
+  # ─── Profile `music`: the two song generators ───────────────────────────
+  # The Python services of docker/, with the same HTTP contract as the .NET ones. The weights are not in the images: they are folders of this machine
+  # (MODELS_PATH/music/<engine>), mounted read-only. They are published on BIND; the server finds them by HEARTMULA_HOST=http://127.0.0.1:8787 and
+  # DIFFRHYTHM2_HOST=http://127.0.0.1:8788 (with MUSIC_TOKEN as their token).
+  #   docker compose --profile music-weights run --rm heartmula-weights       # about 21 GB, once
+  #   docker compose --profile music-weights run --rm diffrhythm2-weights     # about 9.5 GB, once
+  # Each takes the card HEARTMULA_GPU / DIFFRHYTHM2_GPU (0 by default): with two cards, give each its own.
+  heartmula:
+    profiles: [music]
+    image: mediaorquestator/heartmula:${VERSION:-dev}
+    build:
+      context: ./docker/heartmula
+    restart: "no"
+    user: *user
+    environment:
+      HEARTMULA_TOKEN_FILE: /run/secrets/music_token
+      HOME: /tmp
+      # the user of the host has no entry in the image's passwd and torch asks for the user's name
+      USER: app
+    secrets: [music_token]
+    ports:
+      - "${BIND:-127.0.0.1}:${HEARTMULA_PORT:-8787}:8787"
+    volumes:
+      - ${MODELS_PATH:-./compose-data/models}/music/heartmula:/ckpt:ro
+    tmpfs:
+      # the library compiles parts of the model with a C compiler into /tmp, which needs exec
+      - /tmp:exec,mode=1777
+    shm_size: 1g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${HEARTMULA_GPU:-0}"]
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; r = u.Request('http://127.0.0.1:8787/health', headers={'Authorization': 'Bearer ' + open('/run/secrets/music_token').read().strip()}); import sys; sys.exit(0 if u.urlopen(r, timeout=4).status == 200 else 1)"]
+      interval: 20s
+      timeout: 6s
+      retries: 10
+      start_period: 120s
+    security_opt: ["no-new-privileges:true"]
+
+  diffrhythm2:
+    profiles: [music]
+    image: mediaorquestator/diffrhythm2:${VERSION:-dev}
+    build:
+      context: ./docker/diffrhythm2
+    restart: "no"
+    user: *user
+    environment:
+      DIFFRHYTHM2_TOKEN_FILE: /run/secrets/music_token
+      HOME: /tmp
+      # the user of the host has no entry in the image's passwd and torch asks for the user's name
+      USER: app
+    secrets: [music_token]
+    ports:
+      - "${BIND:-127.0.0.1}:${DIFFRHYTHM2_PORT:-8788}:8788"
+    volumes:
+      - ${MODELS_PATH:-./compose-data/models}/music/diffrhythm2:/ckpt:ro
+    tmpfs:
+      - /tmp:exec,mode=1777
+    shm_size: 1g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${DIFFRHYTHM2_GPU:-0}"]
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; r = u.Request('http://127.0.0.1:8788/health', headers={'Authorization': 'Bearer ' + open('/run/secrets/music_token').read().strip()}); import sys; sys.exit(0 if u.urlopen(r, timeout=4).status == 200 else 1)"]
+      interval: 20s
+      timeout: 6s
+      retries: 10
+      start_period: 120s
+    security_opt: ["no-new-privileges:true"]
+
+  # The one-shot downloads of the weights (profile `music-weights`): the only thing of these images that touches the network, and they run on request.
+  heartmula-weights:
+    profiles: [music-weights]
+    image: mediaorquestator/heartmula:${VERSION:-dev}
+    user: *user
+    environment: {HOME: /tmp}
+    entrypoint: ["python", "/opt/fetch.py"]
+    volumes:
+      - ${MODELS_PATH:-./compose-data/models}/music/heartmula:/ckpt
+  diffrhythm2-weights:
+    profiles: [music-weights]
+    image: mediaorquestator/diffrhythm2:${VERSION:-dev}
+    user: *user
+    environment: {HOME: /tmp}
+    entrypoint: ["python", "/opt/fetch.py"]
+    volumes:
+      - ${MODELS_PATH:-./compose-data/models}/music/diffrhythm2:/ckpt
+
+  # ─── Profile `local-llm`: Ollama ────────────────────────────────────────
+  # The language model of the assistant (prompts, descriptions, scene writer). Its models are a folder of this machine (OLLAMA_PATH), so they survive
+  # the container being recreated. The server points at it with OLLAMA_HOST=http://127.0.0.1:11435; pull a model with
+  #   docker compose --profile local-llm exec ollama ollama pull qwen3:8b
+  # To use an Ollama that is somewhere else (or the one installed on this machine), leave this profile off.
+  ollama:
+    profiles: [local-llm]
+    <<: *gpu
+    image: ollama/ollama:0.40.15
+    restart: "no"
+    user: *user
+    environment:
+      OLLAMA_MODELS: /models
+      HOME: /tmp
+    # 11435 and not Ollama's own 11434, which an Ollama installed on this machine usually has
+    ports:
+      - "${BIND:-127.0.0.1}:${OLLAMA_PORT:-11435}:11434"
+    volumes:
+      - ${OLLAMA_PATH:-./compose-data/ollama}:/models
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    security_opt: ["no-new-privileges:true"]
+
+  # ─── Profile `redis`: the Redis of the Monitoring card ──────────────────
+  # Only there so the card's test of Redis has something to answer: the server keeps nothing in it.
+  redis:
+    profiles: [redis]
+    image: redis:7.4-alpine
+    restart: "no"
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$(cat /run/secrets/redis_password)\" --save '' --appendonly no"]
+    secrets: [redis_password]
+    ports:
+      - "${BIND:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$(cat /run/secrets/redis_password)\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    mem_limit: 256m
+    security_opt: ["no-new-privileges:true"]
+
+  # ─── Profile `logs`: Loki and the shipper of the logs ───────────────────
+  # Loki keeps the logs of the stack for 30 days; Alloy reads them from the Docker socket and sends them, and Grafana gets Loki as a data source
+  # (when Grafana starts with Loki on the network: starting this profile later needs `docker compose up -d --force-recreate grafana`).
+  # The socket is mounted read-only, which does not make the Docker API read-only: whatever has it can read every container's logs and environment.
+  loki:
+    profiles: [logs]
+    image: grafana/loki:3.5.0
+    restart: "no"
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    ports:
+      - "${BIND:-127.0.0.1}:${LOKI_PORT:-3100}:3100"
+    volumes:
+      - ./deploy/compose/loki.yaml:/etc/loki/loki.yaml:ro
+      - loki-data:/loki
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3100/ready | grep -q ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    mem_limit: 1g
+    security_opt: ["no-new-privileges:true"]
+
+  alloy:
+    profiles: [logs]
+    image: grafana/alloy:v1.10.0
+    restart: "no"
+    user: root
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    depends_on:
+      loki: {condition: service_healthy}
+    volumes:
+      - ./deploy/compose/alloy.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    mem_limit: 512m
+    security_opt: ["no-new-privileges:true"]
+
+  # ─── Watching it ────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    restart: "no"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}
+    secrets: [orchestrator_token]
+    volumes:
+      - ./deploy/compose/prometheus.services.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    # the server is on this machine, not in the stack
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    mem_limit: 1g
+    security_opt: ["no-new-privileges:true"]
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    restart: "no"
+    depends_on:
+      mysql-users: {condition: service_completed_successfully}
+      prometheus: {condition: service_healthy}
+      loki: {condition: service_healthy, required: false}
+    environment:
+      # Its own state lives in the MySQL of the stack, in its own schema: there is no SQLite file of Grafana.
+      GF_DATABASE_TYPE: mysql
+      GF_DATABASE_HOST: mysql:3306
+      GF_DATABASE_NAME: grafana
+      GF_DATABASE_USER: grafana
+      GF_DATABASE_PASSWORD__FILE: /run/secrets/grafana_db_password
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      MO_DB_NAME: ${MO_DB_NAME:-mediaorquestator}
+      GRAFANA_RO_PASSWORD_FILE: /run/secrets/grafana_ro_password
+    secrets: [grafana_db_password, grafana_admin_password, grafana_ro_password]
+    ports:
+      - "${BIND:-127.0.0.1}:${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - ./deploy/compose/grafana/provisioning:/etc/provisioning-src:ro
+      - ./docs/grafana:/dashboards-src:ro
+    # The dashboards of docs/grafana are made to be imported (their data sources are inputs); here they are provisioned with fixed data source ids,
+    # so the one copy of each file is used as it is and only the two ids are filled in as they are copied.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        mkdir -p /etc/grafana/provisioning /var/lib/grafana/dashboards
+        cp -r /etc/provisioning-src/. /etc/grafana/provisioning/
+        # Loki is a data source only when it is on the network (profile `logs`)
+        if nslookup loki >/dev/null 2>&1; then cp /etc/provisioning-src/datasources/loki.yml.optional /etc/grafana/provisioning/datasources/loki.yml; fi
+        # the read-only password is read from its secret into the data source, which Grafana expands from the environment
+        export GRAFANA_RO_PASSWORD="$$(cat "$$GRAFANA_RO_PASSWORD_FILE")"
+        for f in /dashboards-src/*.json; do
+          sed -e 's/\$${DS_MYSQL}/mysql/g' -e 's/\$${DS_PROMETHEUS}/prometheus/g' "$$f" > "/var/lib/grafana/dashboards/$$(basename "$$f")"
+        done
+        exec /run.sh
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health | grep -q ok"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    mem_limit: 1g
+    security_opt: ["no-new-privileges:true"]
+
+secrets:
+  # Given by the person in .env (compose-init.sh makes them) and handed to the services as files under /run/secrets; they stay on this machine.
+  mysql_root_password:
+    environment: MYSQL_ROOT_PASSWORD
+  mo_db_password:
+    environment: MO_DB_PASSWORD
+  grafana_db_password:
+    environment: GRAFANA_DB_PASSWORD
+  grafana_ro_password:
+    environment: GRAFANA_RO_PASSWORD
+  grafana_admin_password:
+    environment: GRAFANA_ADMIN_PASSWORD
+  music_token:
+    environment: MUSIC_TOKEN
+  redis_password:
+    environment: REDIS_PASSWORD
+  orchestrator_token:
+    environment: ORCHESTRATOR_TOKEN
+
+volumes:
+  mysql-data:
+  prometheus-data:
+  loki-data:
+

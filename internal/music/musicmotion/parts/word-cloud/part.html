@@ -1,0 +1,34 @@
+<div id="wc"></div>
+<script>
+(function(){
+  var P = window.__params, root = document.getElementById('wc'), W = window.innerWidth, H = window.innerHeight;
+  root.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden';
+  var list = String(P.words).split('|').map(function(w){ return w.trim(); }).filter(Boolean);
+  if (!list.length) list = ['...'];
+  var s = 7;
+  function rnd(){ s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }
+  var items = [], cols = Math.ceil(Math.sqrt(P.amount * W / H)), rows = Math.ceil(P.amount / cols);
+  for (var i = 0; i < P.amount; i++) {
+    var size = 0.035 + rnd() * 0.055, el = document.createElement('div');
+    el.textContent = list[i % list.length];
+    el.style.cssText = 'position:absolute;white-space:nowrap;font-family:var(--display);font-weight:700;color:' + (i % 3 === 0 ? 'var(--accent)' : 'var(--fg)') + ';font-size:' + (size * H) + 'px;opacity:0';
+    root.appendChild(el);
+    // one cell of a grid each, so that the words do not pile up, shifted a little; kept inside the frame once measured
+    var cell = {c: i % cols, r: Math.floor(i / cols)};
+    var cw = W * 0.9 / cols, ch = H * 0.62 / rows;
+    var bx = W * 0.05 + (cell.c + 0.5) * cw, by = H * 0.12 + (cell.r + 0.5) * ch;
+    items.push({el: el, bx: bx + (rnd() - 0.5) * cw * 0.3, by: by + (rnd() - 0.5) * ch * 0.3, ph: rnd() * 6.283, born: i});
+  }
+  window.__partSeek = function(t, b){
+    var beats = b.number < 0 ? 0 : b.number + b.position;
+    items.forEach(function(it){
+      var k = Math.max(0, Math.min(1, (beats - it.born * 0.5) / 0.8)), r = it.el.getBoundingClientRect(), w = it.el.offsetWidth, h = it.el.offsetHeight;
+      var x = it.bx + 8 * Math.sin(t * 0.6 + it.ph), y = it.by + 8 * Math.cos(t * 0.5 + it.ph);
+      x = Math.max(4, Math.min(W - w - 4, x - w / 2)); y = Math.max(4, Math.min(H - h - 4, y - h / 2));
+      it.el.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (0.85 + 0.15 * k) + ')';
+      it.el.style.left = '0'; it.el.style.top = '0';
+      it.el.style.opacity = String(k);
+    });
+  };
+})();
+</script>

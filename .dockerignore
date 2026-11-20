@@ -1,0 +1,13 @@
+# The image is built from the Go sources and the install scripts only: everything else of a working copy
+# (what the installer builds, the models, the projects, the media, the history of git) stays out of the context.
+*
+!go.mod
+!go.sum
+!cmd/
+!internal/
+!scripts/
+!deploy/compose/
+!docker/
+# the tests' fixtures are not part of what the server needs to run
+**/testdata
+**/_civitai-test

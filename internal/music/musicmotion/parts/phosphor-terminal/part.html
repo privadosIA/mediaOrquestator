@@ -1,0 +1,29 @@
+<style>
+#pt{position:absolute;left:50%;top:13vh;width:112vh;margin-left:-56vh;padding:4vh 4.4vh;border-radius:2.4vh;background:#050a06;border:.5vh solid #1a2a1c;box-shadow:0 0 6vh rgba(0,0,0,.6) inset,0 0 3vh color-mix(in srgb,var(--pt) 25%,transparent);overflow:hidden;min-height:46vh;font-family:"DejaVu Sans Mono","Liberation Mono",monospace;font-size:4.6vh;line-height:1.5;color:var(--pt);text-shadow:0 0 .9vh var(--pt),0 0 2.4vh color-mix(in srgb,var(--pt) 55%,transparent)}
+#pt.green{--pt:#3dff72}
+#pt.amber{--pt:#ffb000}
+#pt:before{content:"";position:absolute;left:0;top:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0,rgba(0,0,0,.28) .3vh,transparent .3vh,transparent .7vh);pointer-events:none;z-index:2}
+#pt .row{white-space:pre;overflow:hidden;min-height:1.5em}
+#pt .cur{display:inline-block;width:.6em;height:1em;vertical-align:-.12em;background:var(--pt);box-shadow:0 0 1vh var(--pt)}
+</style>
+<div id="pt"></div>
+<script>
+(function(){
+  var P = window.__params, box = document.getElementById('pt'), cur = document.createElement('span'); cur.className = 'cur';
+  box.className = P.tone === 'amber' ? 'amber' : 'green';
+  var lines = String(P.lines).split('|'), rows = lines.map(function(l){ var d = document.createElement('div'); d.className = 'row'; box.appendChild(d); return d; });
+  var total = lines.reduce(function(a, l){ return a + Array.from(l).length; }, 0);
+  window.__partSeek = function(t, b){
+    var at = b.number < 0 ? 0 : b.number + b.position;
+    var typed = Math.floor(total * Math.min(1, at / lines.length));          // one line's worth of letters on every beat
+    var left = typed, last = 0;
+    lines.forEach(function(l, i){
+      var chars = Array.from(l), n = Math.max(0, Math.min(chars.length, left)); left -= chars.length;
+      rows[i].textContent = chars.slice(0, n).join('');
+      if (n > 0 || i === 0) last = i;
+    });
+    if (cur.parentNode !== rows[last]) rows[last].appendChild(cur);
+    cur.style.opacity = b.position < 0.5 ? '1' : '0.2';
+  };
+})();
+</script>

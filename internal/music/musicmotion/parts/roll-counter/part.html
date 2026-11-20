@@ -1,0 +1,46 @@
+<style>
+#rc{position:absolute;left:0;right:0;top:16vh;display:flex;justify-content:center;align-items:flex-end;gap:2vh}
+#rc .neg{font-family:var(--display);font-weight:900;font-size:30vh;line-height:1;color:var(--accent);visibility:hidden}
+#rc .col{position:relative;width:.62em;height:1em;font-family:var(--display);font-weight:900;font-size:30vh;line-height:1;overflow:hidden;text-align:center}
+#rc .col span{position:absolute;left:0;right:0;top:0}
+#rc .lab{font-family:var(--display);font-weight:900;font-size:8vh;color:var(--accent);text-transform:uppercase;padding-bottom:3vh}
+</style>
+<div id="rc"><div class="neg">&minus;</div><div class="digits" style="display:flex"></div><div class="lab">{{label}}</div></div>
+<script>
+(function(){
+  var P = window.__params, root = document.getElementById('rc'), digits = root.querySelector('.digits'), neg = root.querySelector('.neg');
+  var n = Math.max(2, String(Math.max(P.from, P.to)).length), cols = [];
+  for (var k = n - 1; k >= 0; k--) {
+    var c = document.createElement('div'); c.className = 'col';
+    var cur = document.createElement('span'), nxt = document.createElement('span'); cur.className = 'cur'; nxt.className = 'nxt';
+    c.appendChild(cur); c.appendChild(nxt); digits.appendChild(c); cols.push({el: c, cur: cur, nxt: nxt, k: k});
+  }
+  function ease(p){ p = Math.min(1, Math.max(0, p)); return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+  function hash(a, b){ var x = Math.imul(a + 374761393, 668265263) ^ Math.imul(b + 1274126177, 2246822519); x = Math.imul(x ^ x >>> 13, 1274126177); return ((x ^ x >>> 16) >>> 0) / 4294967296; }
+  window.__partSeek = function(t, b){
+    var at = b.number < 0 ? 0 : b.number + b.position;
+    var after = at - P.beats;                                     // beats since the roll ended
+    var tearing = P.glitch && P.to === 0 && after >= 0 && after < 1;
+    var x = P.from + (P.to - P.from) * ease(at / P.beats);
+    if (tearing) x = 1;                                           // the glitch shows a negative value: -1
+    var frame = Math.floor(t * 30), shown = '';
+    cols.forEach(function(c, i){
+      var v = x / Math.pow(10, c.k), base = Math.floor(v + 1e-9), frac = v - base;
+      if (frac < 1e-3) frac = 0;
+      var d = ((base % 10) + 10) % 10, nd = (d + 1) % 10;
+      // A digit rolls when the ones below it wrap: it moves from d to the next as the fraction goes 0 to 1.
+      var off = frac * 100;                                       // percent of the digit height, upwards
+      c.cur.textContent = String(d); c.nxt.textContent = String(nd);
+      c.cur.style.transform = 'translateY(' + (-off) + '%)'; c.nxt.style.transform = 'translateY(' + (100 - off) + '%)';
+      c.nxt.style.visibility = frac > 0 ? 'visible' : 'hidden';
+      var leading = c.k > 0 && base === 0;                        // no leading zeros: a number of fewer digits shows fewer
+      c.el.style.visibility = leading ? 'hidden' : 'visible';
+      if (!leading) shown += String(d);
+      var jit = tearing ? (hash(i, frame) - 0.5) * 6 * (1 - Math.min(1, after * 1.4)) : 0;
+      c.el.style.transform = 'translateX(' + jit + 'vh)';
+    });
+    neg.style.visibility = tearing ? 'visible' : 'hidden';
+    root.setAttribute('data-shown', (tearing ? '-' : '') + shown.replace(/^0+(?=\d)/, ''));
+  };
+})();
+</script>

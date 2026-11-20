@@ -1,0 +1,38 @@
+<canvas id="ss"></canvas>
+<script>
+(function(){
+  var P = window.__params, cv = document.getElementById('ss'), W = window.innerWidth, H = window.innerHeight;
+  cv.width = W; cv.height = H; cv.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%';
+  var cx = cv.getContext('2d');
+  function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  var accent = css('--accent'), fg = css('--fg'), bg = css('--bg');
+  var horizon = H * 0.6;
+  window.__partSeek = function(t, b){
+    cx.clearRect(0, 0, W, H);
+    var lift = b.number < 0 ? 0 : Math.pow(1 - b.position, 3), beats = b.number < 0 ? 0 : b.number + b.position;
+    // the sun
+    var R = H * 0.27 * (1 + 0.03 * lift), sx = W / 2, sy = horizon - R * 0.55;
+    var g = cx.createLinearGradient(0, sy - R, 0, sy + R); g.addColorStop(0, fg); g.addColorStop(1, accent);
+    cx.globalAlpha = 1; cx.fillStyle = g; cx.beginPath(); cx.arc(sx, sy, R, 0, Math.PI * 2); cx.fill();
+    // the stripes: bars of the background colour that get thicker towards the bottom of the sun
+    cx.fillStyle = bg;
+    for (var i = 0; i < P.stripes; i++) {
+      var f = (i + 1) / (P.stripes + 1), y = sy + R * (-0.1 + 1.0 * f), h = R * 0.035 + R * 0.09 * f;
+      cx.fillRect(sx - R - 2, y, R * 2 + 4, h);
+    }
+    // the ground, in the colour of the background, hiding the sun below the horizon
+    cx.fillRect(0, horizon, W, H - horizon);
+    cx.strokeStyle = accent; cx.globalAlpha = 0.9; cx.lineWidth = Math.max(1.5, H * 0.003);
+    cx.beginPath(); cx.moveTo(0, horizon); cx.lineTo(W, horizon); cx.stroke();
+    // the grid in perspective: vertical lines that fan out and horizontal ones that come towards the viewer
+    cx.globalAlpha = 0.55;
+    for (var v = -14; v <= 14; v++) { cx.beginPath(); cx.moveTo(sx + v * W * 0.012, horizon); cx.lineTo(sx + v * W * 0.14, H); cx.stroke(); }
+    var scroll = (t * 0.25 + beats * 0.05) * P.speed;
+    for (var k = 0; k < 14; k++) {
+      var z = ((k + 1 - (scroll % 1)) / 14), y2 = horizon + (H - horizon) * Math.pow(z, 2.2);
+      cx.globalAlpha = 0.25 + 0.5 * z; cx.beginPath(); cx.moveTo(0, y2); cx.lineTo(W, y2); cx.stroke();
+    }
+    cx.globalAlpha = 1;
+  };
+})();
+</script>

@@ -1,0 +1,4 @@
+{"name":"glitch-text","description":"One big word that tears into shifted slices with colour fringes on every beat and settles before the next","version":1,"cost_ms":59,"levels":["advanced"],
+ "params":[
+  {"name":"text","type":"string","default":"RENDERING","max_length":14},
+  {"name":"slices","type":"int","default":6,"min":3,"max":10}]}

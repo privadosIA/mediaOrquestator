@@ -1,0 +1,7 @@
+[
+  ["cuenta", "Cuenta atrás", "", "Part: roll-counter\nParam from: 10\nParam to: 0\nParam beats: 4\nParam label: years\nText: it is closer than it looks\nBPM: 100\nDesign: electronic, code\nDuration: 6"],
+  ["busqueda", "Búsqueda", "", "Part: search-box\nParam query: is it only autocomplete\nParam type_beats: 3\nDuration: 6"],
+  ["tabla", "Tabla de riesgos", "", "Part: data-table\nParam highlight: 3\nDuration: 6"],
+  ["boton", "Botón", "", "Part: click-button\nParam label: Don't ask again\nParam pressed_label: Allowed\nParam press_beat: 3\nDuration: 5"],
+  ["elegida", "La elige el modelo", "", "A password field with a weak password and a red strength bar\nPart: auto\nDuration: 6"]
+]

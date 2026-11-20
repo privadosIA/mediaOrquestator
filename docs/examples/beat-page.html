@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Beat page</title>
+<style>
+  html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; background: #101418; color: #f2f2f2; font: 700 64px sans-serif; }
+  #dot { position: absolute; left: 560px; top: 260px; width: 160px; height: 160px; border-radius: 50%; background: #ff3d6b; }
+  #tag { position: absolute; left: 0; right: 0; top: 520px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="dot"></div>
+<div id="tag"></div>
+<script>
+  // A page of a music piece reads window.__beat, set by the renderer before each frame:
+  //   number (index of the last beat, -1 before the first), position (0 up to 1 inside the beat),
+  //   section (the tag of the lyrics) and bpm. Draw from it and the frames land on the music.
+  window.__seek = function (t) {
+    var b = window.__beat || { number: 0, position: 0, section: '' };
+    var pulse = 1 + 0.35 * Math.pow(1 - b.position, 3); // biggest on the beat, back to normal before the next
+    document.getElementById('dot').style.transform = 'scale(' + pulse + ')';
+    document.getElementById('tag').textContent = b.section;
+  };
+</script>
+</body>
+</html>

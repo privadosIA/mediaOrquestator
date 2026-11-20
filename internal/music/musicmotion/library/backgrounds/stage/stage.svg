@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" preserveAspectRatio="none">
+<rect width="1280" height="720" fill="var(--bg)"/>
+<rect y="520" width="1280" height="200" fill="var(--fg)" opacity=".12"/>
+<rect y="520" width="1280" height="6" fill="var(--accent)"/>
+<path d="M0 0 H230 Q170 360 210 720 H0 Z" fill="var(--accent)" opacity=".85"/>
+<path d="M1280 0 H1050 Q1110 360 1070 720 H1280 Z" fill="var(--accent)" opacity=".85"/>
+<rect x="0" y="0" width="1280" height="46" fill="var(--accent)"/>
+</svg>

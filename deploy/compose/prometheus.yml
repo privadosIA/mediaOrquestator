@@ -1,0 +1,10 @@
+# Prometheus of the stack: it reads the metrics of the server with its token (the same secret the server takes its token from).
+global:
+  scrape_interval: 30s
+scrape_configs:
+  - job_name: mediaorquestator
+    metrics_path: /api/metrics
+    authorization:
+      credentials_file: /run/secrets/orchestrator_token
+    static_configs:
+      - targets: ["server:4666"]

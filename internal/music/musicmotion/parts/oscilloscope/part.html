@@ -1,0 +1,27 @@
+<canvas id="os"></canvas>
+<script>
+(function(){
+  var P = window.__params, cv = document.getElementById('os'), W = window.innerWidth, H = window.innerHeight;
+  cv.width = W; cv.height = H; cv.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%';
+  var cx = cv.getContext('2d');
+  function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  var accent = css('--accent'), fg = css('--fg');
+  var N = 720, a = P.lobes, b = P.lobes + 1;
+  window.__partSeek = function(t, bt){
+    cx.clearRect(0, 0, W, H);
+    var lift = bt.number < 0 ? 0 : Math.pow(1 - bt.position, 3), beats = bt.number < 0 ? 0 : bt.number + bt.position;
+    var R = H * 0.3 * (1 + 0.08 * lift), ox = W / 2, oy = H * 0.4, phase = (t * 0.35 + beats * 0.12) * P.speed;
+    // the graticule
+    cx.globalAlpha = 0.14; cx.strokeStyle = fg; cx.lineWidth = Math.max(1, H * 0.002);
+    for (var i = -4; i <= 4; i++) { cx.beginPath(); cx.moveTo(ox - R * 1.25, oy + i * R / 4); cx.lineTo(ox + R * 1.25, oy + i * R / 4); cx.stroke(); cx.beginPath(); cx.moveTo(ox + i * R * 1.25 / 4, oy - R * 1.1); cx.lineTo(ox + i * R * 1.25 / 4, oy + R * 1.1); cx.stroke(); }
+    // the figure, drawn twice: a wide soft stroke under a thin bright one
+    var pts = [];
+    for (var k = 0; k <= N; k++) { var s = k / N * Math.PI * 2; pts.push([ox + R * 1.25 * Math.sin(a * s + phase), oy + R * Math.sin(b * s)]); }
+    [[0.25, H * 0.016], [0.95, H * 0.004]].forEach(function(w){
+      cx.globalAlpha = w[0]; cx.strokeStyle = accent; cx.lineWidth = w[1]; cx.lineJoin = 'round'; cx.beginPath();
+      pts.forEach(function(p, i){ if (i === 0) cx.moveTo(p[0], p[1]); else cx.lineTo(p[0], p[1]); }); cx.stroke();
+    });
+    cx.globalAlpha = 1;
+  };
+})();
+</script>

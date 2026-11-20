@@ -1,0 +1,19 @@
+<style>
+#st{position:absolute;left:50%;top:36vh;margin:-12vh 0 0 -34vh;width:68vh;height:24vh;display:flex;align-items:center;justify-content:center;border:1.4vh solid var(--accent);border-radius:2.5vh;color:var(--accent);font-family:var(--display);font-weight:900;font-size:11vh;letter-spacing:.02em;transform:rotate(-8deg);text-transform:uppercase;white-space:nowrap}
+#st-bg{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 60%)}
+</style>
+<div id="st-bg"></div><div id="st">{{text}}</div>
+<script>
+(function(){
+  var el = document.getElementById('st'), every = window.__params.every;
+  window.__partSeek = function(t, b){
+    var hits = b.number < 0 ? 0 : Math.floor(b.number / every) + 1;     // slams so far
+    var onHit = b.number >= 0 && b.number % every === 0, p = onHit ? b.position : 1;
+    var k = Math.min(1, p / 0.22), slam = onHit ? (1 - Math.pow(1 - k, 3)) : 1;
+    var s = onHit ? 1.45 - 0.45 * slam : 1;
+    var tilt = -8 + ((hits % 2) ? 2.5 : -2.5);
+    el.style.opacity = hits === 0 ? '0' : (onHit ? String(Math.min(1, k * 1.6)) : '1');
+    el.style.transform = 'rotate(' + tilt + 'deg) scale(' + s + ')';
+  };
+})();
+</script>

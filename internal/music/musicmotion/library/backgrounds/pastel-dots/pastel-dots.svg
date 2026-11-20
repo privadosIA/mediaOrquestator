@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" preserveAspectRatio="none">
+<defs><pattern id="dots" width="64" height="64" patternUnits="userSpaceOnUse"><circle cx="16" cy="16" r="6" fill="var(--accent)" opacity=".22"/><circle cx="48" cy="48" r="6" fill="var(--fg)" opacity=".12"/></pattern></defs>
+<rect width="1280" height="720" fill="var(--bg)"/>
+<rect width="1280" height="720" fill="url(#dots)"/>
+<rect y="560" width="1280" height="160" fill="var(--accent)" opacity=".18"/>
+<rect y="560" width="1280" height="8" fill="var(--accent)" opacity=".7"/>
+<g fill="var(--fg)" opacity=".18"><ellipse cx="180" cy="120" rx="90" ry="34"/><ellipse cx="250" cy="108" rx="60" ry="28"/><ellipse cx="1000" cy="170" rx="100" ry="36"/><ellipse cx="1080" cy="154" rx="64" ry="28"/></g>
+</svg>

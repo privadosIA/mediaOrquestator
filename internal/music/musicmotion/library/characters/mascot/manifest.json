@@ -1,0 +1,24 @@
+{
+ "name": "mascot",
+ "description": "A chibi with big headphones and a hoodie: a round head, a mood in every expression",
+ "version": 1,
+ "width": 200,
+ "height": 260,
+ "anchor": {
+  "x": 0.5,
+  "y": 1.0
+ },
+ "poses": {
+  "idle": "idle.svg",
+  "wave": "wave.svg",
+  "point": "point.svg",
+  "cheer": "cheer.svg"
+ },
+ "expressions": [
+  "happy",
+  "sad",
+  "surprised"
+ ],
+ "default_pose": "idle",
+ "default_expression": "happy"
+}

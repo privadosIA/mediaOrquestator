@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+<style>.body{fill:var(--accent);stroke:var(--fg);stroke-width:5}.arm{fill:var(--accent);stroke:var(--fg);stroke-width:5}.leg{fill:var(--fg)}.eye{fill:var(--bg)}.mouth{fill:none;stroke:var(--bg);stroke-width:5;stroke-linecap:round}.expr{display:none}.expr-happy{display:inline}</style>
+<rect class="leg" x="62" y="168" width="24" height="52" rx="6"/><rect class="leg" x="114" y="168" width="24" height="52" rx="6"/>
+<rect class="arm" x="22" y="92" width="22" height="58" rx="10"/><rect class="arm" x="156" y="92" width="22" height="58" rx="10"/>
+<rect class="body" x="36" y="46" width="128" height="128" rx="20"/>
+<rect x="96" y="22" width="8" height="26" fill="var(--fg)"/><circle cx="100" cy="20" r="8" fill="var(--fg)"/>
+<g class="expr expr-happy"><path class="mouth" d="M70 128 Q100 156 130 128"/><path class="mouth" d="M66 94 Q76 82 86 94"/><path class="mouth" d="M114 94 Q124 82 134 94"/></g>
+<g class="expr expr-sad"><path class="mouth" d="M72 142 Q100 120 128 142"/><circle class="eye" cx="76" cy="96" r="8"/><circle class="eye" cx="124" cy="96" r="8"/></g>
+<g class="expr expr-surprised"><ellipse class="mouth" cx="100" cy="136" rx="12" ry="16"/><circle class="eye" cx="76" cy="94" r="12"/><circle class="eye" cx="124" cy="94" r="12"/></g>
+</svg>

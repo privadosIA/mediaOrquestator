@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-25T15:35:58",
+  "machine": {
+    "host": "laptop",
+    "os": "Linux-7.3.0-4-cachyos-x86_64-with-glibc2.44",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13650HX",
+    "threads": 20,
+    "ram_mb": 31698,
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 4080 Laptop GPU",
+        "vram_mb": 12282,
+        "driver": "615.78.08"
+      }
+    ],
+    "commit": "542f8b5",
+    "sd": "stable-diffusion.cpp version master-1010-bb6a0cc-4-g012c7f8, commit 012c7f8"
+  },
+  "gpu_used": null,
+  "results": {
+    "sdxl": {
+      "title": "SDXL 1024x576, 20 steps, 4 images",
+      "ok": true,
+      "seconds": 31.1,
+      "phases": {
+        "render": 30.8,
+        "export": 0.0
+      },
+      "peak_vram_mb": 10031,
+      "vram_base_mb": 785,
+      "min_free_ram_mb": 25699,
+      "error": ""
+    },
+    "krea2": {
+      "title": "Krea 2 turbo 1024x576, 8 steps, 4 images",
+      "ok": true,
+      "seconds": 48.7,
+      "phases": {
+        "render": 48.6,
+        "export": 0.0
+      },
+      "peak_vram_mb": 9899,
+      "vram_base_mb": 785,
+      "min_free_ram_mb": 23154,
+      "error": ""
+    },
+    "wan5b": {
+      "title": "SDXL still + Wan 2.2 5B animation (33 frames, 832x480)",
+      "ok": true,
+      "seconds": 69.8,
+      "phases": {
+        "render": 6.0,
+        "animate": 63.0,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 9024,
+      "vram_base_mb": 767,
+      "min_free_ram_mb": 18183,
+      "error": ""
+    },
+    "h3": {
+      "title": "SDXL still + MiniMax H3 first-frame, 8-step LoRA, 768x416",
+      "ok": true,
+      "seconds": 125.8,
+      "phases": {
+        "render": 6.0,
+        "animate": 119.1,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 11284,
+      "vram_base_mb": 812,
+      "min_free_ram_mb": 23690,
+      "error": ""
+    },
+    "ltx": {
+      "title": "SDXL still + LTX 2.3 distilled",
+      "ok": true,
+      "seconds": 101.5,
+      "phases": {
+        "render": 6.3,
+        "animate": 95.0,
+        "clip": 0.1,
+        "concat": 0.1
+      },
+      "peak_vram_mb": 11350,
+      "vram_base_mb": 658,
+      "min_free_ram_mb": 21791,
+      "error": ""
+    },
+    "music": {
+      "title": "ACE-Step XL turbo, 30 s instrumental song",
+      "ok": true,
+      "seconds": 9.3,
+      "phases": {
+        "compose": 3.6,
+        "synth": 5.1,
+        "export": 0.4
+      },
+      "peak_vram_mb": 6786,
+      "vram_base_mb": 606,
+      "min_free_ram_mb": 26744,
+      "error": ""
+    }
+  }
+}

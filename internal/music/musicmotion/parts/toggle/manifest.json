@@ -1,0 +1,4 @@
+{"name":"toggle","description":"A column of switches; on every beat one of them flips, and the first one carries the label","version":1,"cost_ms":56,"levels":["simple","medium","advanced"],
+ "params":[
+  {"name":"label","type":"string","default":"allow","max_length":18,"description":"Text next to the first switch"},
+  {"name":"count","type":"int","default":3,"min":1,"max":5,"description":"How many switches"}]}

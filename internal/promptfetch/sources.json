@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "notes": "The only list of sources `npm run prompts:fetch` reads. A source is used only when its dataset card, read from the Hugging Face API on each run, declares a licence in the allow-list of the script (cc0-1.0, cc-by-4.0, apache-2.0, mit) equal to `expected_licence`. `columns.prompt` names the one column that becomes the prompt; only the columns named here are ever read (a lyrics column is never named). Not used, and why, in docs/PROMPT_PRESETS.md.",
+  "sources": [
+    {
+      "id": "diffusiondb",
+      "enabled": true,
+      "repo": "poloclub/diffusiondb",
+      "files": ["metadata.parquet"],
+      "format": "parquet",
+      "kind": "image",
+      "language": "en",
+      "columns": { "prompt": "prompt", "source_id": "image_name" },
+      "expected_licence": "cc0-1.0",
+      "max_rows": 10000,
+      "nsfw": [
+        { "column": "prompt_nsfw", "max": 0.2 },
+        { "column": "image_nsfw", "max": 0.5 }
+      ],
+      "notes": "Text-only metadata (never the images): the prompts of a CC0 collection of Stable Diffusion generations. The authors ask for a threshold on their NSFW scores."
+    },
+    {
+      "id": "rapidata-text2video",
+      "enabled": true,
+      "repo": "Rapidata/awesome-text2video-prompts",
+      "files": ["data/train-00000-of-00001.parquet"],
+      "format": "parquet",
+      "kind": "video",
+      "language": "en",
+      "columns": { "prompt": "Prompt", "tags": [{ "column": "Category", "camel": true }], "source_id": "video_name" },
+      "expected_licence": "apache-2.0",
+      "max_rows": 5000,
+      "notes": "198 prompts in 14 categories, written with ChatGPT and by hand. The category is a tag."
+    },
+    {
+      "id": "suno-descriptions",
+      "enabled": false,
+      "repo": "Kukedlc/suno-ai-music-dataset",
+      "files": ["metadata.csv"],
+      "format": "csv",
+      "kind": "music",
+      "language": "en",
+      "engine": "ace-step",
+      "columns": { "prompt": "gpt_description_prompt", "tags": [{ "column": "tags", "split": "," }], "flags": [{ "column": "is_instrumental", "tag": "instrumental" }], "source_id": "id" },
+      "expected_licence": "cc-by-4.0",
+      "max_rows": 5000,
+      "check": "Off by the owner (2026-11-13), not because of the licence (the card says CC-BY-4.0 and the gate would accept it) but because of where the prompts come from: they were written by Suno's users and nothing here can check that the uploader could license them. Turn it on only for strictly local use, never in a bundle that is shared or published.",
+      "notes": "Style descriptions and tags only; the lyrics column (`prompt_letras`) and the song's title are not named, so they are never read. OFF (owner, 2026-11-13), not because of the licence (the card says CC-BY-4.0 and would pass) but because of the provenance: the prompts were written by Suno's users and nothing here can check that the uploader could license them. Turn it on only for strictly local use, never in a bundle that is shared or published."
+    },
+    {
+      "id": "rapidata-per-model",
+      "enabled": false,
+      "repo": "Rapidata/*",
+      "files": [],
+      "format": "parquet",
+      "kind": "video",
+      "columns": { "prompt": "Prompt" },
+      "expected_licence": "apache-2.0",
+      "max_rows": 5000,
+      "check": "Not checked: the per-model datasets of Rapidata have their own cards and files. Add one entry per dataset, with its repo and file, and let the script read its card before enabling it."
+    },
+    {
+      "id": "humair025-suno-audio",
+      "enabled": false,
+      "repo": "humair025/suno-audio",
+      "files": [],
+      "format": "parquet",
+      "kind": "music",
+      "columns": { "prompt": "prompt" },
+      "expected_licence": "cc-by-4.0",
+      "max_rows": 5000,
+      "check": "Not checked: read its card (licence, columns) first; it holds audio, of which only prompt text and tags may be taken."
+    }
+  ]
+}

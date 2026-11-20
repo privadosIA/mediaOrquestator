@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-25T16:03:49",
+  "machine": {
+    "host": "laptop",
+    "os": "Linux-7.3.0-4-cachyos-x86_64-with-glibc2.44",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13650HX",
+    "threads": 20,
+    "ram_mb": 31698,
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 4080 Laptop GPU",
+        "vram_mb": 12282,
+        "driver": "615.78.08"
+      }
+    ],
+    "commit": "542f8b5",
+    "sd": "stable-diffusion.cpp version master-949-7867f6d, commit 7867f6d"
+  },
+  "gpu_used": null,
+  "results": {
+    "sdxl": {
+      "title": "SDXL 1024x576, 20 steps, 4 images",
+      "ok": true,
+      "seconds": 40.8,
+      "phases": {
+        "render": 40.4,
+        "export": 0.0
+      },
+      "peak_vram_mb": 7970,
+      "vram_base_mb": 658,
+      "min_free_ram_mb": 25487,
+      "error": ""
+    },
+    "krea2": {
+      "title": "Krea 2 turbo 1024x576, 8 steps, 4 images",
+      "ok": true,
+      "seconds": 72.4,
+      "phases": {
+        "render": 72.0,
+        "export": 0.0
+      },
+      "peak_vram_mb": 9061,
+      "vram_base_mb": 686,
+      "min_free_ram_mb": 24187,
+      "error": ""
+    },
+    "intorealism": {
+      "title": "IntoRealism 1024x576, 8 steps, 4 images",
+      "ok": true,
+      "seconds": 98.3,
+      "phases": {
+        "render": 97.8,
+        "export": 0.0
+      },
+      "peak_vram_mb": 11413,
+      "vram_base_mb": 421,
+      "min_free_ram_mb": 12387,
+      "error": ""
+    },
+    "wan5b": {
+      "title": "SDXL still + Wan 2.2 5B animation (33 frames, 832x480)",
+      "ok": true,
+      "seconds": 77.0,
+      "phases": {
+        "render": 6.9,
+        "animate": 69.3,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 7359,
+      "vram_base_mb": 421,
+      "min_free_ram_mb": 19705,
+      "error": ""
+    },
+    "h3": {
+      "title": "SDXL still + MiniMax H3 first-frame, 8-step LoRA, 768x416",
+      "ok": true,
+      "seconds": 122.4,
+      "phases": {
+        "render": 7.1,
+        "animate": 114.5,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 11279,
+      "vram_base_mb": 421,
+      "min_free_ram_mb": 25151,
+      "error": ""
+    },
+    "ltx": {
+      "title": "SDXL still + LTX 2.3 distilled",
+      "ok": true,
+      "seconds": 127.4,
+      "phases": {
+        "render": 7.5,
+        "animate": 119.5,
+        "clip": 0.2,
+        "concat": 0.2
+      },
+      "peak_vram_mb": 11351,
+      "vram_base_mb": 421,
+      "min_free_ram_mb": 23890,
+      "error": ""
+    },
+    "music": {
+      "title": "ACE-Step XL turbo, 30 s instrumental song",
+      "ok": true,
+      "seconds": 9.8,
+      "phases": {
+        "compose": 3.8,
+        "synth": 5.3,
+        "export": 0.3
+      },
+      "peak_vram_mb": 6601,
+      "vram_base_mb": 421,
+      "min_free_ram_mb": 28006,
+      "error": ""
+    },
+    "diffrhythm2": {
+      "title": "DiffRhythm2, 40 s song with English lyrics (.NET service)",
+      "ok": true,
+      "seconds": 24.6,
+      "phases": {
+        "service_start": 2.1,
+        "synth": 20.5,
+        "export": 0.6
+      },
+      "peak_vram_mb": 3112,
+      "vram_base_mb": 518,
+      "min_free_ram_mb": 22056,
+      "error": ""
+    },
+    "heartmula": {
+      "title": "HeartMuLa 3B, 60 s song with English lyrics (.NET service)",
+      "ok": true,
+      "seconds": 89.5,
+      "phases": {
+        "service_start": 26.1,
+        "synth": 84.8,
+        "export": 0.8
+      },
+      "peak_vram_mb": 11670,
+      "vram_base_mb": 518,
+      "min_free_ram_mb": 19605,
+      "error": ""
+    }
+  }
+}

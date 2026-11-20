@@ -1,0 +1,28 @@
+<style>
+#fs{position:absolute;left:0;top:0;width:100%;height:100%}
+#fs .s{position:absolute;height:6.4vh;border-radius:1vh;background:var(--fg);opacity:0}
+#fs .s.a{background:var(--accent)}
+</style>
+<div id="fs"></div>
+<script>
+(function(){
+  var P = window.__params, root = document.getElementById('fs'), bars = [];
+  var widths = [62, 40, 76, 30, 54, 68, 36, 58];
+  for (var i = 0; i < P.count; i++) {
+    var d = document.createElement('div'); d.className = 's' + (i % 3 === 1 ? ' a' : ''); root.appendChild(d);
+    bars.push({el: d, w: widths[i % widths.length], from: i % 2 ? 1 : -1, y: 8 + i * (62 / P.count)});
+  }
+  function ease(p){ p = Math.min(1, Math.max(0, p)); return 1 - Math.pow(1 - p, 3); }
+  window.__partSeek = function(t, b){
+    bars.forEach(function(s, i){
+      var k = b.number < 0 ? 0 : (b.number >= i ? (b.number === i ? ease(b.position / 0.35) : 1) : 0);
+      var wvw = s.w * 100 / 100;
+      s.el.style.width = wvw + '%'; s.el.style.top = s.y + 'vh';
+      var rest = (100 - wvw) / 2;                                  // centred when it has arrived
+      var start = s.from < 0 ? -wvw : 100;
+      s.el.style.left = (start + (rest - start) * k) + '%';
+      s.el.style.opacity = String(Math.min(1, k * 1.5));
+    });
+  };
+})();
+</script>
