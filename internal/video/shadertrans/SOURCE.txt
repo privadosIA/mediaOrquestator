@@ -1,0 +1,8 @@
+shaders.json holds the shaders of @hyperframes/shader-transitions (https://github.com/heygen-com/hyperframes, packages/shader-transitions),
+Copyright 2026 HeyGen, Inc., Apache License 2.0 (LICENSE-hyperframes.txt in this folder), at the commit
+3a4f57252377051f6602bd0149e84f8ead0845b2.
+
+What was changed (Apache-2.0 section 4(b)): the shaders are written in TypeScript there, as strings concatenated from shared fragments.
+scripts/extract-shader-transitions.cjs bundles that source with esbuild, evaluates it, and writes the resulting vertex and fragment
+shader strings to this JSON file, so the server can draw them without Node. The GLSL text is not edited by hand.
+HyperFrames publishes no NOTICE file.

@@ -1,2 +1,18 @@
 mediaOrquestator
 Copyright 2026 Jesús Suero
+
+This product includes software developed by third parties, redistributed in this repository under their own licenses:
+
+HyperFrames shader transitions
+  Copyright 2026 HeyGen, Inc.
+  Licensed under the Apache License, Version 2.0.
+  https://github.com/heygen-com/hyperframes (package @hyperframes/shader-transitions, commit 3a4f57252377051f6602bd0149e84f8ead0845b2)
+  Where: internal/video/shadertrans/shaders.json. The fragment shaders and the vertex shader were extracted from the TypeScript source
+  and serialized as JSON (see internal/video/shadertrans/SOURCE.txt); their text is otherwise unchanged. The license text is in
+  internal/video/shadertrans/LICENSE-hyperframes.txt. HyperFrames publishes no NOTICE file.
+
+Fonts (SIL Open Font License 1.1): Inter, Space Grotesk, JetBrains Mono, Playfair Display, Bebas Neue and Fraunces, as latin subsets
+  (woff2) of the Fontsource packages. Where: internal/music/musicmotion/fonts/, each with its license file and the origin in SOURCE.txt.
+
+The rest of the third-party tools, libraries and models are not part of this repository: they are downloaded from their authors under
+their authors' licenses. See THIRD_PARTY.md.

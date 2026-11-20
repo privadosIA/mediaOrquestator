@@ -60,7 +60,7 @@ The `music` task (`orchestrator assist music`, `POST /api/assist` and, from the 
 bin/orchestrator describe photo.png
 ```
 
-In the editor it is "Describe a reference" next to the prompt (see the dashboard tutorial, in [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs)); the server exposes `POST /api/describe` (see `docs/http-api.md`).
+In the editor it is "Describe a reference" next to the prompt (see the dashboard tutorial, in `dashboards-lab`); the server exposes `POST /api/describe` (see `docs/http-api.md`).
 
 - **Descriptor.** `gemma4:26b` by default (about 12 s per picture on a 12 GB card); `--model` takes any vision model installed in Ollama.  Nothing is downloaded: install a model with `ollama pull <model>`.
 - **Local only.** The file is read by your own Ollama; it is not sent anywhere and it is never used to generate: the new scene comes from the text alone (no img2img, no adapters, no face transfer).

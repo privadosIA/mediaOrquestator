@@ -2,7 +2,7 @@
 
 [← Volver al README](../README.md) · [English version](TUTORIAL.md)
 
-La guía pantalla a pantalla del **dashboard** (entorno, modelos, el editor, runs, historial, estadísticas, música e imágenes propias) vive con el dashboard, en el proyecto [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs) (`docs/TUTORIAL.es.md`), porque describe pantallas que cambian con él. Este documento conserva lo que no depende del front end: los conceptos, qué hacer cuando algo falla, lo mismo desde la terminal, el glosario, la pantalla de API del servidor y un ejemplo completo con su `scenes.yaml`. La numeración es la de la guía completa, así que las secciones que faltan aquí (de la 3 a la 10) están en la del dashboard.
+La guía pantalla a pantalla del **dashboard** (entorno, modelos, el editor, runs, historial, estadísticas, música e imágenes propias) vive con el dashboard, en el proyecto `dashboards-lab` (`docs/TUTORIAL.es.md`), porque describe pantallas que cambian con él. Este documento conserva lo que no depende del front end: los conceptos, qué hacer cuando algo falla, lo mismo desde la terminal, el glosario, la pantalla de API del servidor y un ejemplo completo con su `scenes.yaml`. La numeración es la de la guía completa, así que las secciones que faltan aquí (de la 3 a la 10) están en la del dashboard.
 
 ## Índice
 

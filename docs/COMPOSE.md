@@ -9,7 +9,7 @@ It needs Docker with Compose v2 and the NVIDIA Container Toolkit (the server, Ol
 ## What the stack leaves out
 
 - **A container for the .NET services** (the recognition of songs and the vision of the video-edit tools). The server runs them itself, as programs of the installation folder (`bin/services`): where that folder has none, the tasks that need them are reported unavailable by the server, with their reason, and everything else works. The installer step of the public edition does not build them.
-- **The dashboard** ([`dashboards-labs`](https://github.com/privadosIA/dashboards-labs)) is a separate project and is not in the file. It runs outside and connects to the server: see [the dashboard](#the-dashboard-connects-from-outside).
+- **The dashboard** (`dashboards-lab`) is a separate project and is not in the file. It runs outside and connects to the server: see [the dashboard](#the-dashboard-connects-from-outside).
 
 ## Start
 

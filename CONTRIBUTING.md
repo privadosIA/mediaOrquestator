@@ -25,7 +25,7 @@ This repository is maintained by one person in their free time. Issues and pull 
 
 ## What is not here
 
-This repository is the server: the HTTP API, its contract (`internal/server/openapi.yaml`) and the pipelines. The dashboards that use the API are a separate project, [`dashboards-labs`](https://github.com/privadosIA/dashboards-labs).
+This repository is the server: the HTTP API, its contract (`internal/server/openapi.yaml`) and the pipelines. The dashboards that use the API are a separate project and are not published here.
 
 ## Adult content
 
