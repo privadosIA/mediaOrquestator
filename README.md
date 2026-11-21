@@ -59,7 +59,7 @@ This behavior is specified in detail in `openspec/specs/` (one capability per `i
 
 ## Quick start
 
-**Platforms.** Supported and tested: Linux x86_64 with an NVIDIA GPU. Windows and macOS are not supported yet; [docs/INSTALL.md](docs/INSTALL.md#other-platforms-windows-and-macos) says what might work there (WSL2, Docker Desktop, Apple Silicon) and what has not been tried. The dashboard itself only needs a browser, so it can be used from any system against a server running on Linux.
+**Platforms.** Supported and tested: Linux x86_64 with an NVIDIA GPU. Windows and macOS are not supported yet; [docs/INSTALL.md](docs/INSTALL.md#other-platforms-windows-and-macos) says what might work there (WSL2, Docker Desktop, Apple Silicon) and what has not been tried. Cards that are not NVIDIA: the ggml engines (`sd`, `acestep`) have Vulkan, Metal and (`sd`) ROCm backends, but the PyTorch ones (HeartMuLa, DiffRhythm2) need CUDA, or ROCm through the Docker containers, and TorchSharp has no ROCm build; none of it is tried here ([details](docs/INSTALL.md#cards-that-are-not-nvidia)). The dashboard itself only needs a browser, so it can be used from any system against a server running on Linux.
 
 On Linux x86_64 with an NVIDIA GPU (see [Installation](docs/INSTALL.md) for the details and other cases):
 

@@ -20,13 +20,33 @@ Only Linux x86_64 with an NVIDIA GPU is supported and tested. Nothing below has 
 | Windows 11 with an NVIDIA GPU | **WSL2** (Ubuntu) with the NVIDIA driver of Windows, then this guide as on Linux | Probably works: WSL2 exposes CUDA to the Linux side. Untested |
 | Windows 11 with an NVIDIA GPU | **Docker Desktop** (WSL2 backend) and the [Compose stack](#with-docker-compose), with the NVIDIA Container Toolkit | Probably works. Untested |
 | Windows, native | Not planned: the scripts are bash and `sd`/`acestep` would need MSVC builds | Not supported |
-| macOS on Apple Silicon | Build `sd` and `acestep` with Metal instead of CUDA, services with `--cpu`, scripts ported to Homebrew | Not supported: needs porting and measuring; slower and with less memory than an NVIDIA card |
+| macOS on Apple Silicon | Build `sd` and `acestep` with Metal instead of CUDA, services with `--cpu`, scripts ported to Homebrew | Not supported: the installer and `serve.sh` are Linux-only. The first two steps were tried by hand, see [macOS on Apple Silicon: what was tried](#macos-on-apple-silicon-what-was-tried) |
 | macOS on Intel | Same as above, without Metal in practice | Not supported |
+| Linux with an AMD or Intel card | `sd` and `acestep` with Vulkan (`sd` also ROCm); HeartMuLa and DiffRhythm2 in the Docker containers with the ROCm wheel of PyTorch | Not supported and not tried; the .NET services have no ROCm build. See [Cards that are not NVIDIA](#cards-that-are-not-nvidia) |
 | Any system, only the dashboard | Open the dashboard (or the phone app) in a browser against a server running on Linux | Works today |
 
 Without an NVIDIA GPU everything that does not render still works (the editor, the import, narration and the recognition services on the CPU); see [NVIDIA driver and CUDA](#nvidia-driver-and-cuda).
 
 If you try one of these, please report what worked and what did not (the installer's `--check` output helps).
+
+### macOS on Apple Silicon: what was tried
+
+Tried on 2026-11-20 on a Mac mini M4 with 16 GB of unified memory, building by hand in a scratch folder (nothing installed, no change to this repository):
+
+| Step | Result |
+|---|---|
+| `go build ./cmd/orchestrator` (Go 1.27, darwin/arm64) | Builds unchanged, 4 s |
+| `sd` at the pinned commit (`SD_REF`, `7867f6d`) with `cmake -B build -DSD_METAL=ON -DCMAKE_BUILD_TYPE=Release` | Builds first time, 40 s. Needs only `git`, `cmake` and a compiler |
+| One 512x512 image with SD-Turbo (`sd-cli -m sd_turbo.safetensors --steps 4 --cfg-scale 1.0`) | Correct picture in 8.7 s on the GPU (Metal). The checkpoint file is 5.2 GB (fp32) |
+
+**Not tried:** `orchestrator serve` with that `sd` plugged in, SDXL at normal size, the video models (Wan, MiniMax H3, LTX 2.3), `acestep`, the music services, Blender and Real-ESRGAN/RIFE. The video set needs about 21 GB of RAM (see above) and the Apple GPU shares its memory with the system, so 16 GB is tight for it; a Mac with more memory removes that limit but not the others (a slower GPU than an NVIDIA card, engines measured only with CUDA). A sensible split is the Mac for the server, the dashboard and the image mode, and the heavy video and music work on a Linux machine with an NVIDIA card.
+
+### Cards that are not NVIDIA
+
+There are two families of engines, and they do not share a backend:
+
+- **ggml engines** (`sd`, `acestep`): besides CUDA and Metal, ggml has a Vulkan backend (`-DSD_VULKAN=ON` for `sd`; the `acestep.cpp` README lists Vulkan too), and `sd` also has ROCm and SYCL ones. `scripts/build-sd.sh` builds only with CUDA and needs `nvcc`, so another backend means changing that flag. Not tried here. Real-ESRGAN and RIFE already run on Vulkan (see [Video upscalers](#video-upscalers-real-esrgan-and-rife)).
+- **PyTorch engines** (HeartMuLa and DiffRhythm2, as the Docker containers of `docker/` and as the .NET services, which use TorchSharp, that is libtorch): PyTorch has no useful Vulkan backend for these models. The containers install the `cu128` wheels and need the NVIDIA container runtime; with an AMD card they would need the ROCm wheel of PyTorch and `/dev/kfd` and `/dev/dri` passed to the container (not tried). The .NET services have `TorchBackend` `cpu`, `cuda-windows` or `cuda-linux` and no ROCm option: TorchSharp has no ROCm package, and its issue [#1125](https://github.com/dotnet/TorchSharp/issues/1125) was closed as not planned. It would mean building LibTorchSharp against a ROCm libtorch of the same version as TorchSharp 0.107; nobody has done it here.
 
 ## The installer
 
