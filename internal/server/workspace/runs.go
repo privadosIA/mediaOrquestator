@@ -419,6 +419,12 @@ func (m *runManager) work(ctx context.Context, rn *run) {
 	m.recordCalibration(rn)
 }
 
+// How many times afterRun tries to take a run's changes into the database, and the pause that grows with each attempt.
+const (
+	ingestAttempts = 5
+	ingestBackoff  = 40 * time.Millisecond
+)
+
 // afterRun takes into the database what the run changed in the folder of its project (a fix applied to the definition, a page the model wrote)
 // and measures the folder again; whatever the state the run ended in.
 func (m *runManager) afterRun(project string) {
@@ -426,7 +432,17 @@ func (m *runManager) afterRun(project string) {
 		return
 	}
 	dir := filepath.Join(m.projectsDir, project)
-	if err := m.projects.Ingest(project, dir, "run"); err != nil {
+	// What a run changed is taken once, when it ends, and a failure here drops it: the database can be busy for a moment (the run's
+	// own records are written at the same time; with the in-memory database of the tests a write waits for no lock, and
+	// "database is locked" is the answer), so a few more attempts are made before giving up.
+	var err error
+	for attempt := 1; attempt <= ingestAttempts; attempt++ {
+		if err = m.projects.Ingest(project, dir, "run"); err == nil {
+			break
+		}
+		time.Sleep(time.Duration(attempt) * ingestBackoff)
+	}
+	if err != nil {
 		slog.Warn("cannot take the changes of the run into the database", "project", project, "err", err)
 	}
 	if m.measure != nil {
