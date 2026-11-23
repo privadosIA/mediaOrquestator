@@ -277,3 +277,139 @@ func TestMotionAPI_APageReplacedThroughTheAPIIsTheOneTheNextRunDraws(t *testing.
 		t.Fatalf("the run draws the replaced page: %q (model calls %d)", drawn, calls)
 	}
 }
+
+const timelinePage = `<!doctype html><html><head><style>body{background:#012}</style></head><body><h1 id="t">hi</h1>` +
+	`<script type="application/json" id="motion-timeline">{"version":1,"tracks":[{"id":"title","target":"#t","start":0,"duration":1,"from":{"opacity":0},"to":{"opacity":1}}]}</script></body></html>`
+
+func reviseRequest(t *testing.T, s *testServer, scene string, body any) (int, string) {
+	t.Helper()
+	rec := doJSON(t, s.Handler(), http.MethodPost, "/api/projects/demo/scenes/"+scene+"/motion/revise", body)
+	return rec.Code, rec.Body.String()
+}
+
+func TestMotionAPI_ReviseChangesTheTimelineOfTheStoredPageOnly(t *testing.T) {
+	s, _ := motionServer(t)
+	generated := motion.Meta{Kind: "motion_graphic", Provider: "Ollama", Model: "writer:7b", GeneratedSHA256: motion.SHA256(timelinePage)}
+	putPage(t, s, "gfx", timelinePage, &generated)
+	s.Overrides.MotionWriter = func(context.Context) (motion.Writer, motion.ModelInfo, error) {
+		return nil, motion.ModelInfo{Provider: "Gemini", Model: "flash"}, nil
+	}
+	var gotPage, gotInstruction string
+	var gotReq motion.Request
+	var viewed bool
+	s.Overrides.MotionRevise = func(ctx context.Context, _ motion.Writer, browser, page, instruction string, r motion.Request, _ motion.Limits, view motion.Viewer) (string, error) {
+		gotPage, gotInstruction, gotReq = page, instruction, r
+		if browser != "/fake/chrome" {
+			t.Errorf("the revised page is checked in the browser found: %q", browser)
+		}
+		if view != nil {
+			viewed = true
+			if got := view(ctx, "<p>x</p>"); got != "<p>x</p>" { // no compression service configured: the page as it is
+				t.Errorf("without a service the model sees the page: %q", got)
+			}
+		}
+		next, _ := motion.SpliceTimeline(page, `{"version":1,"tracks":[]}`)
+		return next, nil
+	}
+	rec := doJSON(t, s.Handler(), http.MethodPost, "/api/projects/demo/scenes/gfx/motion/revise", map[string]any{"instruction": "  slower entrances  "})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("%d %s", rec.Code, rec.Body)
+	}
+	if gotPage != timelinePage || gotInstruction != "slower entrances" || gotReq.Width != 1280 || gotReq.Height != 720 || gotReq.Overlay || !viewed {
+		t.Fatalf("what Revise got: page ok=%v instruction=%q request=%+v viewed=%v", gotPage == timelinePage, gotInstruction, gotReq, viewed)
+	}
+	var out struct {
+		motionView
+		Revised struct{ Provider, Model string } `json:"revised"`
+	}
+	json.Unmarshal(rec.Body.Bytes(), &out)
+	if out.Revised.Model != "flash" || out.Revised.Provider != "Gemini" {
+		t.Errorf("the answer says who retimed it: %+v", out.Revised)
+	}
+	if !out.Exists || !strings.Contains(out.HTML, `"tracks":[]`) || out.Preview == "" || out.Browser != "126.0.1" {
+		t.Errorf("the answer is the stored page as in the GET: %+v", out.motionView)
+	}
+	html, meta, _ := storedPage(t, s, "gfx", false)
+	if !strings.Contains(html, `"tracks":[]`) || !strings.Contains(html, `<h1 id="t">hi</h1>`) {
+		t.Fatal("the new timeline is stored and the rest of the page is as it was")
+	}
+	// the model that wrote the page is still the one that wrote it, and the page now reads as edited since
+	if meta.Model != "writer:7b" || meta.Origin(html) != motion.OriginEdited || out.Origin != motion.OriginEdited {
+		t.Errorf("meta = %+v, origin %q", meta, out.Origin)
+	}
+}
+
+func TestMotionAPI_ReviseAPageSuppliedByHandStaysSuppliedAndAnOverlayHasItsOwn(t *testing.T) {
+	s, _ := motionServer(t)
+	if err := s.Projects().PutPage("demo", "pic", true, timelinePage, nil); err != nil {
+		t.Fatal(err)
+	}
+	s.Overrides.MotionWriter = func(context.Context) (motion.Writer, motion.ModelInfo, error) { return nil, motion.ModelInfo{}, nil }
+	var gotReq motion.Request
+	s.Overrides.MotionRevise = func(_ context.Context, _ motion.Writer, _, page, _ string, r motion.Request, _ motion.Limits, _ motion.Viewer) (string, error) {
+		gotReq = r
+		return page + "<!-- retimed -->", nil
+	}
+	code, body := reviseRequest(t, s, "pic", map[string]any{"instruction": "a bounce on the title", "overlay": true})
+	if code != http.StatusOK {
+		t.Fatalf("%d %s", code, body)
+	}
+	if !gotReq.Overlay {
+		t.Errorf("an overlay is revised as one: %+v", gotReq)
+	}
+	html, meta, _ := storedPage(t, s, "pic", true)
+	if !strings.Contains(html, "retimed") || meta.Kind != "overlay" || meta.Origin(html) != motion.OriginSupplied {
+		t.Errorf("a supplied page stays supplied: %+v", meta)
+	}
+	if _, _, found := storedPage(t, s, "pic", false); found {
+		t.Error("the other page of the scene is not touched")
+	}
+}
+
+func TestMotionAPI_ReviseFailuresSayWhyAndKeepTheStoredPage(t *testing.T) {
+	s, _ := motionServer(t)
+	s.Overrides.MotionWriter = func(context.Context) (motion.Writer, motion.ModelInfo, error) { return nil, motion.ModelInfo{}, nil }
+	called := false
+	s.Overrides.MotionRevise = func(context.Context, motion.Writer, string, string, string, motion.Request, motion.Limits, motion.Viewer) (string, error) {
+		called = true
+		return "", motion.ErrTimelineRejected
+	}
+	for name, tc := range map[string]struct {
+		scene string
+		body  any
+		want  int
+		text  string
+	}{
+		"no instruction":   {"gfx", map[string]any{}, http.StatusBadRequest, "instruction is required"},
+		"a blank one":      {"gfx", map[string]any{"instruction": "   "}, http.StatusBadRequest, "instruction is required"},
+		"too long":         {"gfx", map[string]any{"instruction": strings.Repeat("a", 1001)}, http.StatusBadRequest, "longer than 1000"},
+		"nothing stored":   {"gfx", map[string]any{"instruction": "slower"}, http.StatusNotFound, "no stored page"},
+		"a plain scene":    {"plain", map[string]any{"instruction": "slower"}, http.StatusBadRequest, ""},
+		"an unknown scene": {"nope", map[string]any{"instruction": "slower"}, http.StatusNotFound, "not found"},
+	} {
+		if code, body := reviseRequest(t, s, tc.scene, tc.body); code != tc.want || !strings.Contains(body, tc.text) {
+			t.Errorf("%s: %d %s", name, code, body)
+		}
+	}
+	if called {
+		t.Fatal("the model is not called for a request that is refused before")
+	}
+	// a page with no timeline block cannot be revised and the model is not called
+	putPage(t, s, "gfx", validPage, nil)
+	if code, body := reviseRequest(t, s, "gfx", map[string]any{"instruction": "slower"}); code != http.StatusUnprocessableEntity || !strings.Contains(body, "no motion-timeline block") || called {
+		t.Fatalf("a page without a timeline: %d %s (called %v)", code, body, called)
+	}
+	// the model could not write a working timeline: 422 and the stored page is as it was
+	putPage(t, s, "gfx", timelinePage, nil)
+	if code, body := reviseRequest(t, s, "gfx", map[string]any{"instruction": "slower"}); code != http.StatusUnprocessableEntity || !called {
+		t.Fatalf("a rejected timeline: %d %s", code, body)
+	}
+	if html, _, _ := storedPage(t, s, "gfx", false); html != timelinePage {
+		t.Fatal("a failed revision leaves the stored page as it was")
+	}
+	// no browser to check the page in
+	s.Overrides.MotionBrowser = func() (motion.Browser, error) { return motion.Browser{}, motion.ErrNoBrowser }
+	if code, body := reviseRequest(t, s, "gfx", map[string]any{"instruction": "slower"}); code != http.StatusServiceUnavailable || !strings.Contains(body, "Chrome") {
+		t.Fatalf("no browser: %d %s", code, body)
+	}
+}

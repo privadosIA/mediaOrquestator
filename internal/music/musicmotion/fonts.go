@@ -5,38 +5,22 @@ package musicmotion
 // the render and the browser preview draw the same letters and the page still loads nothing from outside.
 
 import (
-	"embed"
 	"encoding/base64"
 	"fmt"
 	"sort"
 	"strings"
+
+	"mediaOrquestator/internal/music/musicmotion/fonts"
 )
-
-//go:embed fonts
-var fontsFS embed.FS
-
-// packedFont is a font of the pack: the family name CSS uses and the weights embedded.
-type packedFont struct {
-	Family  string
-	Weights []int
-	Stack   string
-}
 
 const fontLicence = "OFL-1.1"
 
-// packed are the fonts of the pack, by the name a design uses.
-var packed = map[string]packedFont{
-	"inter":            {"Inter", []int{400, 700}, `"Inter", "Helvetica Neue", Arial, "Liberation Sans", sans-serif`},
-	"space-grotesk":    {"Space Grotesk", []int{400, 700}, `"Space Grotesk", "Helvetica Neue", Arial, "Liberation Sans", sans-serif`},
-	"jetbrains-mono":   {"JetBrains Mono", []int{400, 700}, `"JetBrains Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Consolas, monospace`},
-	"playfair-display": {"Playfair Display", []int{400, 700}, `"Playfair Display", Georgia, "Times New Roman", "Liberation Serif", serif`},
-	"bebas-neue":       {"Bebas Neue", []int{400}, `"Bebas Neue", Impact, "Arial Narrow", "Liberation Sans Narrow", sans-serif`},
-	"fraunces":         {"Fraunces", []int{400, 700}, `"Fraunces", Georgia, "Times New Roman", "Liberation Serif", serif`},
-}
-
-// fontAlias maps the six stack names that existed before the pack to the font of the pack that replaces their first choice;
-// the stack that was theirs stays after it as the fallback.
-var fontAlias = map[string]string{"grotesk": "inter", "mono": "jetbrains-mono", "serif": "fraunces", "heavy": "bebas-neue"}
+// The pack itself (the files, the families and the names the six old stacks map to) lives in the fonts package, which
+// has no dependencies, so the 3D scenes of the pipeline can read it too.
+var (
+	packed    = fonts.Packed
+	fontAlias = fonts.Alias
+)
 
 // legacyStacks are the system stacks the first six names had.
 var legacyStacks = map[string]string{
@@ -88,13 +72,7 @@ func FontFiles() map[string]FontFile {
 }
 
 // packOf is the font of the pack a name stands for, if it stands for one.
-func packOf(name string) (string, bool) {
-	if _, ok := packed[name]; ok {
-		return name, true
-	}
-	p, ok := fontAlias[name]
-	return p, ok
-}
+func packOf(name string) (string, bool) { return fonts.Of(name) }
 
 // FontFaceCSS is the @font-face of the fonts of the pack the names stand for, each once, with the font as a data: URL (the
 // weights it has). Names that stand for no font of the pack (the system stacks) add nothing.
@@ -112,7 +90,7 @@ func FontFaceCSS(names ...string) string {
 	for _, name := range order {
 		p := packed[name]
 		for _, w := range p.Weights {
-			raw, err := fontsFS.ReadFile(fmt.Sprintf("fonts/%s-%d.woff2", name, w))
+			raw, err := fonts.ReadFile(name, w)
 			if err != nil {
 				continue // the pack is embedded at build time; a test checks every file is there
 			}

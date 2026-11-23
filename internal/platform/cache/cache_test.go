@@ -3,6 +3,7 @@ package cache
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"testing"
@@ -285,5 +286,32 @@ func TestBlenderHash_FollowsEachInputAndNothingElse(t *testing.T) {
 		if BlenderHash(p) == h {
 			t.Errorf("%s must change the hash", name)
 		}
+	}
+}
+
+func TestBlenderHash_ABuiltSceneFollowsItsResolvedDescriptionAndItsFont(t *testing.T) {
+	base := BlenderParams{Build: "d", Font: "f", Samples: 32, Resolution: "1280x720", FPS: 30, Length: "a", Version: "5.3.0"}
+	h := BlenderHash(base)
+	for name, mut := range map[string]func(*BlenderParams){
+		"description": func(p *BlenderParams) { p.Build = "e" },
+		"font":        func(p *BlenderParams) { p.Font = "g" },
+		"samples":     func(p *BlenderParams) { p.Samples = 8 },
+		"length":      func(p *BlenderParams) { p.Length = "b" },
+		"version":     func(p *BlenderParams) { p.Version = "5.4.0" },
+	} {
+		p := base
+		mut(&p)
+		if BlenderHash(p) == h {
+			t.Errorf("%s must change the hash", name)
+		}
+	}
+}
+
+func TestBlenderHash_AFileSceneIsHashedAsBeforeTheBuildFieldsExisted(t *testing.T) {
+	// the three new fields are left out when empty: the key of every .blend scene already cached stays the same
+	data, _ := json.Marshal(BlenderParams{FileSHA256: "f", Inject: "{}", Samples: 8, Resolution: "1x1", FPS: 24, Length: "l", Version: "5"})
+	const old = `{"file_sha256":"f","inject":"{}","samples":8,"resolution":"1x1","fps":24,"length":"l","version":"5"}`
+	if string(data) != old {
+		t.Errorf("a file scene serialises as %s, it used to be %s", data, old)
 	}
 }

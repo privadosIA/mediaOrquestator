@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -36,6 +37,18 @@ func TestSceneBlender_ValidNeedsNoPromptOrModel(t *testing.T) {
 	b := c.Scenes[0].Blender
 	if b.ResolvedDevice() != BlenderAuto || b.ResolvedSamples() != DefaultBlenderSamples {
 		t.Errorf("defaults: %s %d", b.ResolvedDevice(), b.ResolvedSamples())
+	}
+}
+
+func TestSceneBlender_ABuiltSceneRendersAt16SamplesAndAFileSceneAt64(t *testing.T) {
+	if got := (SceneBlender{Build: "t.scene.json"}).ResolvedSamples(); got != 16 {
+		t.Errorf("a built scene without samples = %d, want 16", got)
+	}
+	if got := (SceneBlender{File: "turn.blend"}).ResolvedSamples(); got != 64 {
+		t.Errorf("a .blend scene without samples = %d, want 64", got)
+	}
+	if got := (SceneBlender{Build: "t.scene.json", Samples: 40}).ResolvedSamples(); got != 40 {
+		t.Errorf("the samples a scene gives are used: %d", got)
 	}
 }
 
@@ -148,5 +161,134 @@ blender:
 func TestValidSourceFileAcceptsBlend(t *testing.T) {
 	if !ValidSourceFile("scene.blend") || ValidSourceFile("../scene.blend") || ValidSourceFile("scene.blend.exe") {
 		t.Error("ValidSourceFile and .blend")
+	}
+}
+
+// buildProject is blenderProject with a description in the sources and a scene that builds it.
+func buildProject(t *testing.T) (*Config, string) {
+	t.Helper()
+	c, dir := blenderProject(t)
+	os.WriteFile(filepath.Join(dir, SourcesSubdir, "titulo.scene.json"), []byte(`{"version":1}`), 0o644)
+	c.Scenes[0].Blender = &SceneBlender{Build: "titulo.scene.json", Samples: 32}
+	return c, dir
+}
+
+func TestSceneBlender_ABuiltSceneIsValidAndNeedsNoModel(t *testing.T) {
+	c, dir := buildProject(t)
+	if err := c.ValidateInDir(linked(dir)); err != nil {
+		t.Fatalf("a valid built scene: %v", err)
+	}
+	if !c.Scenes[0].IsBlender() || !c.Scenes[0].Blender.IsBuild() {
+		t.Error("IsBlender / IsBuild")
+	}
+}
+
+func TestSceneBlender_BuildRefusals(t *testing.T) {
+	for name, tc := range map[string]struct {
+		edit func(*Scene)
+		want string
+	}{
+		"neither":        {func(s *Scene) { s.Blender.Build = "" }, "blender.file is required"},
+		"both":           {func(s *Scene) { s.Blender.File = "turn.blend" }, "cannot both be given"},
+		"with inject":    {func(s *Scene) { s.Blender.Inject = map[string]any{"Title": "x"} }, "blender.inject cannot be used with blender.build"},
+		"with frames":    {func(s *Scene) { s.Blender.Frames = []int{1, 10} }, "blender.frames cannot be used with blender.build"},
+		"not a spec":     {func(s *Scene) { s.Blender.Build = "titulo.json" }, "must be the name of a .scene.json file"},
+		"a path":         {func(s *Scene) { s.Blender.Build = "sub/titulo.scene.json" }, "not a path"},
+		"parent folder":  {func(s *Scene) { s.Blender.Build = "../x.scene.json" }, "not a path"},
+		"absolute":       {func(s *Scene) { s.Blender.Build = "/etc/x.scene.json" }, "not a path"},
+		"missing":        {func(s *Scene) { s.Blender.Build = "gone.scene.json" }, `gone.scene.json" not found`},
+		"with animate":   {func(s *Scene) { s.Animate = true }, "cannot be combined with animate"},
+		"with a graphic": {func(s *Scene) { s.MotionGraphic = "x" }, "cannot be combined with motion_graphic"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			c, dir := buildProject(t)
+			tc.edit(&c.Scenes[0])
+			err := c.ValidateInDir(linked(dir))
+			if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Errorf("err = %v, want it to contain %q", err, tc.want)
+			}
+		})
+	}
+}
+
+func TestSceneBlender_ASymlinkOutOfTheSourcesIsRefused(t *testing.T) {
+	for name, edit := range map[string]func(*Scene){
+		"build": func(s *Scene) { s.Blender = &SceneBlender{Build: "out.scene.json"} },
+		"file":  func(s *Scene) { s.Blender = &SceneBlender{File: "out.blend"} },
+	} {
+		t.Run(name, func(t *testing.T) {
+			c, dir := buildProject(t)
+			outside := t.TempDir()
+			target := filepath.Join(outside, "secret")
+			os.WriteFile(target, []byte("x"), 0o644)
+			for _, n := range []string{"out.scene.json", "out.blend"} {
+				if err := os.Symlink(target, filepath.Join(dir, SourcesSubdir, n)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			edit(&c.Scenes[0])
+			err := c.ValidateInDir(linked(dir))
+			if err == nil || !strings.Contains(err.Error(), "resolves outside") {
+				t.Errorf("err = %v", err)
+			}
+		})
+	}
+}
+
+func TestSceneBlender_ASymlinkInsideTheSourcesIsFine(t *testing.T) {
+	c, dir := buildProject(t)
+	if err := os.Symlink("titulo.scene.json", filepath.Join(dir, SourcesSubdir, "alias.scene.json")); err != nil {
+		t.Fatal(err)
+	}
+	c.Scenes[0].Blender.Build = "alias.scene.json"
+	if err := c.ValidateInDir(linked(dir)); err != nil {
+		t.Errorf("a link inside the sources: %v", err)
+	}
+}
+
+func TestSceneBlender_BuildYAMLRoundTrip(t *testing.T) {
+	var s Scene
+	if err := yaml.Unmarshal([]byte("id: s1\nblender:\n  build: titulo.scene.json\n  samples: 32\n"), &s); err != nil {
+		t.Fatal(err)
+	}
+	if s.Blender == nil || s.Blender.Build != "titulo.scene.json" || s.Blender.File != "" || s.Blender.Samples != 32 {
+		t.Fatalf("parsed: %+v", s.Blender)
+	}
+	out, _ := yaml.Marshal(s)
+	if strings.Contains(string(out), "file:") {
+		t.Errorf("an empty file is written: %s", out)
+	}
+}
+
+func TestSourceNames_SceneDescriptionsAndFonts(t *testing.T) {
+	for name, want := range map[string]bool{"a.scene.json": true, "A.SCENE.JSON": true, ".scene.json": false, "a.json": false, "a/b.scene.json": false} {
+		if got := ValidSceneSpecName(name); got != want {
+			t.Errorf("ValidSceneSpecName(%q) = %v", name, got)
+		}
+	}
+	for name, want := range map[string]bool{"a.ttf": true, "B.OTF": true, "a.woff2": false, "../a.ttf": false} {
+		if got := ValidFontName(name); got != want {
+			t.Errorf("ValidFontName(%q) = %v", name, got)
+		}
+	}
+	if !ValidSourceFile("a.scene.json") || !ValidSourceFile("a.ttf") {
+		t.Error("descriptions and fonts can be stored in the sources")
+	}
+}
+
+func TestSceneBlender_TheExampleProjectIsValid(t *testing.T) {
+	_, here, _, _ := runtime.Caller(0) // other tests change the working directory
+	dir := filepath.Join(filepath.Dir(here), "..", "..", "..", "testdata", "blender-build")
+	c, err := Load(filepath.Join(dir, "scenes.yaml"))
+	if err != nil {
+		t.Fatalf("the example project: %v", err)
+	}
+	c.Checks = Checks{Blender: func() error { return nil }}
+	if err := c.ValidateInDir(dir); err != nil {
+		t.Fatalf("the example project: %v", err)
+	}
+	s := c.Scenes[0]
+	if !s.IsBlender() || !s.Blender.IsBuild() || s.Blender.Build != "titulo.scene.json" || s.SilenceDuration() != 5 || c.Defaults.FPS != 30 {
+		t.Errorf("scene = %+v", s)
 	}
 }

@@ -665,11 +665,17 @@ func ManifestPath() string {
 	return filepath.Join("tmp", "manifest.json")
 }
 
-// BlenderParams is everything that decides the video Blender renders for a scene: the content of the .blend file, the
-// values injected into it, the render settings, the size and frame rate, how long the scene is and Blender's version.
+// BlenderParams is everything that decides the video Blender renders for a scene: the content of the .blend file (or,
+// for a scene built from a description, the description resolved with the project's tempo and design colours, and its fonts), the values injected
+// into it, the render settings, the size and frame rate, how long the scene is and Blender's version.
 // The device (card or CPU) is deliberately not part of it: the same picture up to noise is not worth a new render.
 type BlenderParams struct {
-	FileSHA256 string `json:"file_sha256"`
+	FileSHA256 string `json:"file_sha256"` // empty for a built scene
+	// Build and Font are only for a built scene (omitted otherwise, so the hash of a .blend scene is the one it always
+	// was): the SHA-256 of the description resolved (every key in seconds, every colour #rrggbb), and the identity of
+	// the font files it uses (the files of the sources and the WOFF2 of the design's fonts).
+	Build      string `json:"build,omitempty"`
+	Font       string `json:"font,omitempty"`
 	Inject     string `json:"inject"` // canonical JSON (keys sorted)
 	Samples    int    `json:"samples"`
 	Frames     []int  `json:"frames,omitempty"`

@@ -460,6 +460,10 @@ func runVideoOverlap(ctx context.Context, cfg *config.Config, emitter *events.Em
 			decision = cache.DecideWithFilter(manifest, onlyFilter, scene.ID, audioHash, imageHash, clipHash, force)
 		}
 		st.mu.Unlock()
+		if BlendMissing(base, scene) {
+			// A built scene whose kept .blend is gone is rendered again, and its clip made again with it.
+			decision.Phases[cache.PhaseRender], decision.Phases[cache.PhaseClip] = false, false
+		}
 		wavPath, pngPath, mp4Path := cache.ArtifactPaths(scene.ID)
 		animRawPath, animPath := cache.AnimatePaths(scene.ID)
 
@@ -539,7 +543,7 @@ func runVideoOverlap(ctx context.Context, cfg *config.Config, emitter *events.Em
 				err = renderMotionScene(ctx, mo, execRunner, base, scene, width, height, cfg.Defaults.FPS, durationSeconds, pngPath)
 			} else if scene.IsBlender() {
 				// A Blender scene: rendered on the card this stage holds (or the CPU) to a video as long as the scene.
-				err = renderBlenderScene(ctx, execRunner, emitter, base, scene, width, height, cfg.Defaults.FPS, durationSeconds, renderEnv, pngPath)
+				err = renderBlenderScene(ctx, execRunner, emitter, cfg, base, scene, width, height, cfg.Defaults.FPS, durationSeconds, renderEnv, pngPath)
 			} else if scene.Clip != "" {
 				// The scene's own clip: its first frame is the scene picture.
 				err = fitSceneClipFrame(ctx, execRunner, scene, renderW, renderH, pngPath)

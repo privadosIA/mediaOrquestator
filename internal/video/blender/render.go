@@ -17,6 +17,9 @@ import (
 // here: they are never part of the script's text, so no text can break out of it.
 const EnvVar = "MO_BLENDER"
 
+// DescriptionFile is the name, inside the frames folder, of the resolved description the script reads.
+const DescriptionFile = "scene.json"
+
 // script is the whole of what runs inside Blender (passed inline, no file is written). It opens nothing itself: the
 // file is the one on the command line, with auto-execution of its scripts disabled.
 const script = `import bpy, os, sys, json, math
@@ -62,7 +65,277 @@ def set_colour(mat, val):
                 return
     mat.diffuse_color = col
 
-for name, val in cfg['inject'].items():
+# --- build: a scene description (contract v1) made into a scene. The description is data: nothing in it is evaluated,
+# and every name it gives is looked up in the fixed tables below.
+EASES = {
+    'linear': ('LINEAR', 'AUTO'),
+    'inout': ('BEZIER', 'AUTO'),
+    'in': ('CUBIC', 'EASE_IN'),
+    'out': ('CUBIC', 'EASE_OUT'),
+    'back': ('BACK', 'EASE_OUT'),
+    'bounce': ('BOUNCE', 'EASE_OUT'),
+    'elastic': ('ELASTIC', 'EASE_OUT'),
+    'step': ('CONSTANT', 'AUTO'),
+}
+ALIGNS = {'left': 'LEFT', 'center': 'CENTER', 'right': 'RIGHT'}
+LIGHT_KINDS = {'sun': 'SUN', 'area': 'AREA', 'point': 'POINT'}
+LIGHT_POWER = {'sun': 2.0, 'area': 500.0, 'point': 500.0}
+ADD_MESH = {
+    'cube': lambda s: bpy.ops.mesh.primitive_cube_add(size=s),
+    'sphere': lambda s: bpy.ops.mesh.primitive_uv_sphere_add(radius=s / 2.0),
+    'cylinder': lambda s: bpy.ops.mesh.primitive_cylinder_add(radius=s / 2.0, depth=s),
+    'cone': lambda s: bpy.ops.mesh.primitive_cone_add(radius1=s / 2.0, depth=s),
+    'torus': lambda s: bpy.ops.mesh.primitive_torus_add(major_radius=s / 2.0, minor_radius=s / 8.0),
+    'plane': lambda s: bpy.ops.mesh.primitive_plane_add(size=s),
+}
+
+def backdrop_mesh(name, size, curve):
+    # A cyclorama: a floor of depth size that curves up (a quarter circle of radius curve, 16 segments) into a wall
+    # size / 2 high at +Y, size wide and centred on the origin. A plain mesh with no modifier, so the .blend opens
+    # the same anywhere. The profile runs front to back and up; the quad winding makes the normals face the camera.
+    half = size / 2.0
+    prof = [(-half, 0.0)]
+    cy = half - curve
+    for i in range(17):
+        a = (math.pi / 2.0) * i / 16.0
+        prof.append((cy + curve * math.sin(a), curve - curve * math.cos(a)))
+    if half > curve:
+        prof.append((half, half))
+    verts, faces = [], []
+    for y, z in prof:
+        verts.append((-half, y, z))
+        verts.append((half, y, z))
+    for i in range(len(prof) - 1):
+        a0, b0, a1, b1 = 2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 3
+        faces.append((a0, b0, b1, a1))
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    me.update()
+    for p in me.polygons:
+        p.use_smooth = True
+    return me
+
+def fcurves_of(idb):
+    ad = idb.animation_data
+    if ad is None or ad.action is None:
+        return []
+    act = ad.action
+    if hasattr(act, 'fcurves'):
+        return list(act.fcurves)
+    out = []
+    for layer in act.layers:
+        for strip in layer.strips:
+            cb = strip.channelbag(ad.action_slot)
+            if cb is not None:
+                out.extend(cb.fcurves)
+    return out
+
+def apply_eases(idb, plan):
+    # The ease of a key is the way the interval that ENDS at it is travelled; Blender keeps it on the key where the
+    # interval starts, so each point gets the ease of the next one. The ease of a channel's first key is not used.
+    # step is CONSTANT on that previous point: the value holds until the key's frame and jumps to it there.
+    for fc in fcurves_of(idb):
+        marks = plan.get(fc.data_path) or plan.get('*')
+        if not marks:
+            continue
+        pts = fc.keyframe_points
+        for i in range(len(pts) - 1):
+            interp, easing = EASES[marks.get(int(round(pts[i + 1].co[0])), 'inout')]
+            pts[i].interpolation = interp
+            pts[i].easing = easing
+            if interp == 'BEZIER':
+                pts[i].handle_left_type = 'AUTO_CLAMPED'
+                pts[i].handle_right_type = 'AUTO_CLAMPED'
+        fc.update()
+
+def build_scene(path):
+    with open(path, 'r', encoding='utf-8') as fh:
+        spec = json.load(fh)
+    fps = cfg['fps']
+    count = cfg['count']
+
+    col = colour_of  # the description arrives resolved: every colour is #rrggbb
+
+    def frame_of(t):
+        return min(int(math.floor(t * fps + 0.5)) + 1, count)
+
+    for ob in list(bpy.data.objects):
+        bpy.data.objects.remove(ob, do_unlink=True)
+    for coll in (bpy.data.meshes, bpy.data.materials, bpy.data.lights, bpy.data.cameras, bpy.data.curves):
+        for item in list(coll):
+            coll.remove(item)
+
+    scene.render.fps = fps
+    scene.render.fps_base = 1.0
+    scene.frame_start = 1
+    scene.frame_end = count
+    scene.view_settings.view_transform = 'Standard'  # the palette's colours stay the palette's colours
+
+    world = scene.world
+    if world is None:
+        world = bpy.data.worlds.new('world')
+        scene.world = world
+    if world.node_tree is None:
+        world.use_nodes = True
+    w = spec.get('world') or {}
+    bgn = world.node_tree.nodes['Background']
+    bgn.inputs['Color'].default_value = col(w['color'])
+    bgn.inputs['Strength'].default_value = float(w.get('strength', 1.0))
+
+    def new_material(name, m):
+        mat = bpy.data.materials.new(name)
+        if mat.node_tree is None:
+            mat.use_nodes = True
+        bsdf = mat.node_tree.nodes['Principled BSDF']
+        c = col(m['color'])
+        bsdf.inputs['Base Color'].default_value = c
+        bsdf.inputs['Roughness'].default_value = float(m.get('roughness', 0.5))
+        bsdf.inputs['Metallic'].default_value = float(m.get('metallic', 0.0))
+        bsdf.inputs['Emission Color'].default_value = c
+        bsdf.inputs['Emission Strength'].default_value = float(m.get('emission', 0.0))
+        return mat
+
+    mats = {}
+    for name, m in (spec.get('materials') or {}).items():
+        mats[name] = new_material(name, m)
+
+    def link(ob):
+        scene.collection.objects.link(ob)
+        return ob
+
+    def aim(ob, target):
+        e = link(bpy.data.objects.new(ob.name + '.target', None))
+        e.location = target
+        c = ob.constraints.new('TRACK_TO')
+        c.target = e
+        c.track_axis = 'TRACK_NEGATIVE_Z'
+        c.up_axis = 'UP_Y'
+        return e
+
+    def key_channel(ob, attr, value, f, ease, plan):
+        setattr(ob, attr, value)
+        if not ob.keyframe_insert(attr, frame=f):
+            die('could not key ' + attr + ' of ' + ob.name)
+        plan.setdefault(attr, {})[f] = ease
+
+    def key_object(ob, keys, mat=None):
+        plan = {}
+        mplan = {}
+        for k in sorted(keys, key=lambda k: k['t']):
+            f = frame_of(k['t'])
+            ease = k.get('ease', 'inout')
+            if 'location' in k:
+                key_channel(ob, 'location', k['location'], f, ease, plan)
+            if 'rotation' in k:
+                key_channel(ob, 'rotation_euler', [math.radians(a) for a in k['rotation']], f, ease, plan)
+            if 'scale' in k:
+                s = k['scale']
+                key_channel(ob, 'scale', s if isinstance(s, list) else [s, s, s], f, ease, plan)
+            if 'emission' in k and mat is not None:
+                sock = mat.node_tree.nodes['Principled BSDF'].inputs['Emission Strength']
+                sock.default_value = float(k['emission'])
+                if not sock.keyframe_insert('default_value', frame=f):
+                    die('could not key the emission of ' + ob.name)
+                mplan.setdefault('*', {})[f] = ease
+        apply_eases(ob, plan)
+        if mat is not None and mplan:
+            apply_eases(mat.node_tree, mplan)
+
+    for o in spec.get('objects') or []:
+        size = float(o['size'])
+        keys = o.get('keys') or []
+        if o['type'] == 'text':
+            cu = bpy.data.curves.new(o['id'], 'FONT')
+            cu.body = o['text']
+            cu.size = size
+            cu.extrude = float(o.get('extrude', 0.0))
+            cu.bevel_depth = float(o.get('bevel', 0.0))
+            cu.align_x = ALIGNS[o.get('align', 'left')]
+            if o.get('font'):
+                if o['font'] in ('display', 'body'):
+                    path = cfg['fonts'].get(o['font'])
+                    if not path:
+                        die('the design has no ' + o['font'] + ' font for text ' + o['id'])
+                else:
+                    path = os.path.join(cfg['sources'], o['font'])
+                cu.font = bpy.data.fonts.load(path)
+            ob = link(bpy.data.objects.new(o['id'], cu))
+        elif o['type'] == 'backdrop':
+            ob = link(bpy.data.objects.new(o['id'], backdrop_mesh(o['id'], size, float(o['curve']))))
+        else:
+            ADD_MESH[o['type']](size)
+            ob = bpy.context.view_layer.objects.active
+            ob.name = o['id']
+            for p in ob.data.polygons:
+                p.use_smooth = True
+        mat = None
+        if o.get('material'):
+            mat = mats[o['material']]
+            if any('emission' in k for k in keys):
+                mat = mat.copy()  # its emission is this object's own, not shared with the others using the material
+                mat.name = o['id'] + '.' + o['material']
+            ob.data.materials.append(mat)
+        key_object(ob, keys, mat)
+
+    for i, l in enumerate(spec.get('lights') or []):
+        name = 'light' + str(i)
+        kind = l['type']
+        ld = bpy.data.lights.new(name, LIGHT_KINDS[kind])
+        ld.energy = float(l.get('power', LIGHT_POWER[kind]))
+        ld.color = col(l['color'])[:3]
+        if kind == 'area':
+            ld.size = float(l.get('size', 1.0))
+        elif kind == 'point':
+            ld.shadow_soft_size = float(l.get('size', 0.1))
+        lo = link(bpy.data.objects.new(name, ld))
+        lo.location = l.get('location', [0.0, 0.0, 0.0])
+        lo.rotation_euler = [math.radians(a) for a in l.get('rotation', [0.0, 0.0, 0.0])]
+        if 'target' in l:
+            aim(lo, l['target'])
+
+    cs = spec['camera']
+    cd = bpy.data.cameras.new('camera')
+    cd.lens = float(cs.get('lens', 50.0))
+    cam = link(bpy.data.objects.new('camera', cd))
+    scene.camera = cam
+    ckeys = sorted(cs.get('keys') or [], key=lambda k: k['t'])
+    plan = {}
+    tplan = {}
+    target = None
+    for k in ckeys:
+        if 'target' in k:
+            target = aim(cam, k['target'])
+            break
+    for k in ckeys:
+        f = frame_of(k['t'])
+        ease = k.get('ease', 'inout')
+        if 'location' in k:
+            key_channel(cam, 'location', k['location'], f, ease, plan)
+        if 'rotation' in k:
+            key_channel(cam, 'rotation_euler', [math.radians(a) for a in k['rotation']], f, ease, plan)
+        if 'target' in k and target is not None:
+            key_channel(target, 'location', k['target'], f, ease, tplan)
+    apply_eases(cam, plan)
+    if target is not None:
+        apply_eases(target, tplan)
+
+    out = cfg.get('blend_out')
+    if out:
+        # Before the render, so a render that fails still leaves the scene to open. The device preferences are not part
+        # of the file: they are set below, in this session only.
+        bpy.ops.file.pack_all()
+        bpy.ops.wm.save_as_mainfile(filepath=out, copy=True, compress=True)
+    print('MO_BUILT', out or '')
+
+if cfg.get('build'):
+    try:
+        build_scene(cfg['build'])
+    except SystemExit:
+        raise
+    except Exception as e:
+        die('build: ' + type(e).__name__ + ': ' + str(e))
+
+for name, val in ([] if cfg.get('build') else cfg['inject'].items()):
     ob = bpy.data.objects.get(name)
     if ob is not None and ob.type == 'FONT':
         ob.data.body = str(val)
@@ -79,7 +352,11 @@ for name, val in cfg['inject'].items():
             continue
     die('inject: there is no text object, material or object property named %r in the file' % name)
 
-if cfg.get('frames'):
+if cfg.get('build') and cfg.get('frame'):
+    first, file_last = cfg['frame'], cfg['frame']  # one frame of the clip: the keys are still placed against the whole scene
+elif cfg.get('build'):
+    first, file_last = 1, cfg['count']
+elif cfg.get('frames'):
     first, file_last = cfg['frames']
 else:
     first, file_last = scene.frame_start, scene.frame_end
@@ -134,6 +411,17 @@ type Params struct {
 	Frames []int
 	// Count is how many frames the scene needs (its length times the frame rate).
 	Count int
+	// Spec is the scene description (resolved by Load) to build in Blender instead of opening File; Sources is the
+	// sources folder, where the fonts it names are; Fonts is the path of the TTF the design's display and body fonts
+	// are; BlendOut is where the built scene is saved as a .blend before the render; FPS is the project's frame rate.
+	// Only with Spec.
+	Spec     *Spec
+	Sources  string
+	Fonts    map[string]string
+	BlendOut string
+	FPS      int
+	// Frame, with Spec, renders only that frame (1-based) of the Count of the scene: what a preview needs. 0 renders them all.
+	Frame int
 }
 
 // Result says what the render did.
@@ -153,15 +441,39 @@ func (p Params) Settings(out string) ([]byte, error) {
 	if device == "" {
 		device = "auto"
 	}
-	return json.Marshal(map[string]any{
+	m := map[string]any{
 		"inject": inject, "samples": p.Samples, "device": device, "gpu": p.GPU,
 		"width": p.Width, "height": p.Height, "frames": p.Frames, "count": p.Count, "out": out,
-	})
+	}
+	if p.Spec != nil {
+		build, sources, blend := filepath.Join(out, DescriptionFile), p.Sources, p.BlendOut
+		if sources != "" && !filepath.IsAbs(sources) {
+			sources = filepath.Join(p.Dir, sources)
+		}
+		if blend != "" && !filepath.IsAbs(blend) {
+			blend = filepath.Join(p.Dir, blend)
+		}
+		fonts := p.Fonts
+		if fonts == nil {
+			fonts = map[string]string{}
+		}
+		// The description travels as a path: it can be larger than one environment string.
+		m["build"], m["sources"], m["blend_out"], m["fps"], m["fonts"] = build, sources, blend, p.FPS, fonts
+		if p.Frame > 0 {
+			m["frame"] = p.Frame
+		}
+	}
+	return json.Marshal(m)
 }
 
-// BuildArgs are the arguments of the render. The script is always the same text; only the environment varies.
+// BuildArgs are the arguments of the render. The script is always the same text; only the environment varies. A scene
+// built from a description has no file: Blender starts from its empty factory scene.
 func BuildArgs(file string) []string {
-	return []string{"--factory-startup", "-b", "-noaudio", file, "--disable-autoexec", "--python-exit-code", "1", "--python-expr", script}
+	args := []string{"--factory-startup", "-b", "-noaudio"}
+	if file != "" {
+		args = append(args, file)
+	}
+	return append(args, "--disable-autoexec", "--python-exit-code", "1", "--python-expr", script)
 }
 
 // Script is the inline script, for the tests.
@@ -173,6 +485,11 @@ func Render(ctx context.Context, r runner.CommandRunner, bin string, p Params, e
 	if p.Count <= 0 {
 		return Result{}, fmt.Errorf("blender: the scene has no frames to render")
 	}
+	// Blender runs with the project's folder as its working directory, so every path it is given must be absolute: a relative
+	// project folder (the server's PROJECTS_DIR is "projects") would be read again from inside itself.
+	if abs, err := filepath.Abs(p.Dir); err == nil {
+		p.Dir = abs
+	}
 	out := p.Out
 	if !filepath.IsAbs(out) {
 		out = filepath.Join(p.Dir, out)
@@ -183,12 +500,36 @@ func Render(ctx context.Context, r runner.CommandRunner, bin string, p Params, e
 	if err := os.MkdirAll(out, 0o755); err != nil {
 		return Result{}, err
 	}
+	if p.Spec != nil {
+		// The resolved description is what the script reads: it is written next to the frames and goes with them.
+		data, err := p.Spec.JSON()
+		if err != nil {
+			return Result{}, err
+		}
+		if err := os.WriteFile(filepath.Join(out, DescriptionFile), data, 0o644); err != nil {
+			return Result{}, err
+		}
+	}
 	settings, err := p.Settings(out)
 	if err != nil {
 		return Result{}, err
 	}
 	file := p.File
-	if !filepath.IsAbs(file) {
+	if p.Spec != nil {
+		if p.File != "" || p.FPS <= 0 {
+			return Result{}, fmt.Errorf("blender: a built scene has no file and needs the frame rate")
+		}
+		file = ""
+		if p.BlendOut != "" {
+			blend := p.BlendOut
+			if !filepath.IsAbs(blend) {
+				blend = filepath.Join(p.Dir, blend)
+			}
+			if err := os.MkdirAll(filepath.Dir(blend), 0o755); err != nil {
+				return Result{}, err
+			}
+		}
+	} else if !filepath.IsAbs(file) {
 		file = filepath.Join(p.Dir, file)
 	}
 	var stderr bytes.Buffer
@@ -254,6 +595,9 @@ func JoinArgs(dir string, fps int, seconds float64, out string) []string {
 
 // Join joins the PNG frames written by Render into a video of exactly seconds seconds at fps, working in dir.
 func Join(ctx context.Context, r runner.CommandRunner, dir, frames string, fps int, seconds float64, out string) error {
+	if abs, err := filepath.Abs(dir); err == nil { // ffmpeg runs in dir: a relative one would be read again from inside itself
+		dir = abs
+	}
 	if !filepath.IsAbs(frames) {
 		frames = filepath.Join(dir, frames)
 	}

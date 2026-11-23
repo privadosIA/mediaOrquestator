@@ -99,6 +99,11 @@ The pages of a music-motion piece embed six free fonts so that the render and th
 SIL Open Font License 1.1 (latin subsets taken from the [Fontsource](https://fontsource.org) packages; the licence file of each
 one is in `internal/music/musicmotion/fonts/`).
 
+The 3D scenes built in Blender (`docs/SCENES_YAML.md`) use the same fonts: Blender does not read WOFF2, so the program decodes
+the font once to TrueType with **[tdewolff/font](https://github.com/tdewolff/font)** (MIT, with its dependency
+tdewolff/parse, MIT, and the Brotli decoder it uses, MIT; compiled into the program, nothing is downloaded). The decoded
+files are kept in the cache folder and packed into the `.blend` of the scene.
+
 ## Weights that come with another model
 
 - **DiffRhythm2** downloads the MuQ-MuLan and MuQ weights (CC-BY-NC 4.0, **non-commercial**). Songs made with

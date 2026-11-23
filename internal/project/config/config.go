@@ -711,9 +711,9 @@ func ValidClipName(name string) bool {
 }
 
 // ValidSourceFile reports whether name can be stored in the sources folder:
-// audio (mp3, wav), a picture or a video.
+// audio (mp3, wav), a picture, a video, a .blend file, a scene description (.scene.json) or a font (.ttf, .otf).
 func ValidSourceFile(name string) bool {
-	return ValidSourceName(name) || ValidImageName(name) || ValidClipName(name) || ValidBlendName(name)
+	return ValidSourceName(name) || ValidImageName(name) || ValidClipName(name) || ValidBlendName(name) || ValidSceneSpecName(name) || ValidFontName(name)
 }
 
 // MotionType returns the scene's resolved motion type: static when the

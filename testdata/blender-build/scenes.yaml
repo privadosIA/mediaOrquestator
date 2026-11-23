@@ -1,0 +1,27 @@
+# A 3D title built inside Blender from sources/titulo.scene.json (spec blender-engine): 5 s at 120 bpm, a studio
+# backdrop with no horizon, the title in the design's display font rising with an overshoot by beat 1.2, a camera dolly
+# over the ten beats and an accent sphere that hits on every beat from 1 to 9 (step) and decays by the half beat.
+project: blender-build
+
+output:
+  mode: video
+  file: out/blender-build.mp4
+
+defaults:
+  resolution: 1280x720
+  fps: 30
+  motion:
+    bpm: 120
+    design:
+      dark: "#0b0f14"
+      light: "#e8f1ec"
+      accent: "#ff3b30"
+      display: playfair-display
+      body: mono
+      default_mode: dark
+
+scenes:
+  - id: titulo
+    silence_seconds: 5
+    blender:
+      build: titulo.scene.json

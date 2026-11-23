@@ -11,14 +11,20 @@ import (
 	"mediaOrquestator/internal/video/blender"
 )
 
-// SceneBlender makes a scene from a .blend file of the project's sources, rendered by Blender (Cycles) to a video as
-// long as the scene. Inject sets things in the file by name before the render: the text of a text object, the colour
-// of a material, or a custom property of an object ("Object.property").
+// SceneBlender makes a scene rendered by Blender (Cycles) to a video as long as the scene, from one of two things in the
+// project's sources: a .blend file (File) or a scene description (Build, a .scene.json built inside Blender). Exactly one
+// of the two. Inject sets things in a .blend file by name before the render: the text of a text object, the colour of a
+// material, or a custom property of an object ("Object.property").
 type SceneBlender struct {
-	File string `yaml:"file" json:"file"`
+	// File is a .blend file of the sources folder.
+	File string `yaml:"file,omitempty" json:"file,omitempty"`
+	// Build is a scene description (a .scene.json file of the sources folder) that Blender builds and renders; the
+	// built scene is also kept as a .blend. Not with Inject or Frames.
+	Build string `yaml:"build,omitempty" json:"build,omitempty"`
 	// Inject maps a name to a text, a number, a boolean or a list of numbers (a colour: 3 or 4 values, or "#rrggbb").
 	Inject map[string]any `yaml:"inject,omitempty" json:"inject,omitempty"`
-	// Samples is the Cycles samples per pixel; 0 means the default (DefaultBlenderSamples).
+	// Samples is the Cycles samples per pixel; 0 means the default (DefaultBlenderSamples for a .blend, DefaultBuiltSamples
+	// for a scene built from a description).
 	Samples int `yaml:"samples,omitempty" json:"samples,omitempty"`
 	// Device is "auto" (a card when the run gives one, else the CPU), "gpu" or "cpu"; empty means auto.
 	Device string `yaml:"device,omitempty" json:"device,omitempty"`
@@ -32,7 +38,12 @@ const (
 	BlenderGPU            = "gpu"
 	BlenderCPU            = "cpu"
 	DefaultBlenderSamples = 64
-	MaxBlenderSamples     = 4096
+	// DefaultBuiltSamples is the default for a scene built from a description. The example of the project
+	// testdata/blender-build at 16 samples against 32 gave a mean SSIM of 0.9988 over every 15th frame (measured on one
+	// RTX 5060 Ti, see docs/SCENES_YAML.md): the objects of a description are simple and the denoiser does the rest, so
+	// 16 is enough and cuts the render by a third. A .blend keeps 64, because its materials are the author's.
+	DefaultBuiltSamples = 16
+	MaxBlenderSamples   = 4096
 )
 
 // ResolvedDevice is the device asked for, with auto when none is.
@@ -46,6 +57,9 @@ func (b SceneBlender) ResolvedDevice() string {
 // ResolvedSamples is the samples to render with.
 func (b SceneBlender) ResolvedSamples() int {
 	if b.Samples <= 0 {
+		if b.IsBuild() {
+			return DefaultBuiltSamples
+		}
 		return DefaultBlenderSamples
 	}
 	return b.Samples
@@ -54,9 +68,42 @@ func (b SceneBlender) ResolvedSamples() int {
 // IsBlender reports whether the scene is rendered by Blender from a .blend file.
 func (s Scene) IsBlender() bool { return s.Blender != nil }
 
+// IsBuild reports whether the scene is built from a description instead of rendered from a .blend file.
+func (b SceneBlender) IsBuild() bool { return b.Build != "" }
+
 // ValidBlendName reports whether name can be a .blend file of the sources folder: a plain file name.
 func ValidBlendName(name string) bool {
 	return sourceNamePattern.MatchString(name) && strings.EqualFold(filepath.Ext(name), ".blend")
+}
+
+// SceneSpecSuffix ends the name of a scene description.
+const SceneSpecSuffix = ".scene.json"
+
+// ValidSceneSpecName reports whether name can be a scene description of the sources folder: a plain file name that
+// ends in .scene.json.
+func ValidSceneSpecName(name string) bool {
+	return sourceNamePattern.MatchString(name) && len(name) > len(SceneSpecSuffix) && strings.HasSuffix(strings.ToLower(name), SceneSpecSuffix)
+}
+
+// ValidFontName reports whether name can be a font of the sources folder (for a 3D text): a plain .ttf or .otf name.
+func ValidFontName(name string) bool {
+	ext := strings.ToLower(filepath.Ext(name))
+	return sourceNamePattern.MatchString(name) && (ext == ".ttf" || ext == ".otf")
+}
+
+// insideDir reports whether the file name, given as a plain name inside dir, is a regular reading that stays inside dir
+// once symbolic links are followed.
+func insideDir(dir, name string) bool {
+	d, err := filepath.EvalSymlinks(dir)
+	if err != nil {
+		return false
+	}
+	f, err := filepath.EvalSymlinks(filepath.Join(dir, name))
+	if err != nil {
+		return false
+	}
+	rel, err := filepath.Rel(d, f)
+	return err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
 }
 
 func (k Checks) blender() error {
@@ -78,13 +125,31 @@ func (c *Config) validateSceneBlender(s Scene, statPath func(string) string) []e
 		errs = append(errs, fmt.Errorf("config: scene %q: "+format, append([]any{s.ID}, a...)...))
 	}
 	switch {
-	case b.File == "":
-		bad("blender.file is required: the name of a .blend file in %s", SourcesSubdir)
-	case !ValidBlendName(b.File):
-		bad("blender.file %q must be the name of a .blend file, not a path", b.File)
-	default:
-		if info, err := os.Stat(statPath(filepath.Join(SourcesSubdir, b.File))); err != nil || info.IsDir() {
+	case b.File == "" && b.Build == "":
+		bad("blender.file is required (the name of a .blend file in %s), or blender.build (a .scene.json description)", SourcesSubdir)
+	case b.File != "" && b.Build != "":
+		bad("blender.file and blender.build cannot both be given: a scene is rendered from a .blend file or built from a description")
+	case b.File != "":
+		if !ValidBlendName(b.File) {
+			bad("blender.file %q must be the name of a .blend file, not a path", b.File)
+		} else if info, err := os.Stat(statPath(filepath.Join(SourcesSubdir, b.File))); err != nil || info.IsDir() {
 			bad("blender.file %q not found in %s", b.File, SourcesSubdir)
+		} else if !insideDir(statPath(SourcesSubdir), b.File) {
+			bad("blender.file %q resolves outside %s", b.File, SourcesSubdir)
+		}
+	default:
+		if !ValidSceneSpecName(b.Build) {
+			bad("blender.build %q must be the name of a %s file, not a path", b.Build, SceneSpecSuffix)
+		} else if info, err := os.Stat(statPath(filepath.Join(SourcesSubdir, b.Build))); err != nil || info.IsDir() {
+			bad("blender.build %q not found in %s", b.Build, SourcesSubdir)
+		} else if !insideDir(statPath(SourcesSubdir), b.Build) {
+			bad("blender.build %q resolves outside %s", b.Build, SourcesSubdir)
+		}
+		if len(b.Inject) > 0 {
+			bad("blender.inject cannot be used with blender.build: the description says everything")
+		}
+		if b.Frames != nil {
+			bad("blender.frames cannot be used with blender.build: the frames come from the length of the scene")
 		}
 	}
 	switch b.Device {
@@ -114,7 +179,7 @@ func (c *Config) validateSceneBlender(s Scene, statPath func(string) string) []e
 		"motion_prompt": s.MotionPrompt != "", "animation": s.Animation != nil, "render": s.Render != nil,
 	} {
 		if set {
-			bad("blender cannot be combined with %s: the scene is rendered from a .blend file", name)
+			bad("blender cannot be combined with %s: the scene is rendered by Blender", name)
 		}
 	}
 	for name, set := range map[string]bool{"prompt": s.Prompt != "", "negative_prompt": s.NegativePrompt != "", "lora": s.Lora != "", "variants": s.Variants != nil && *s.Variants != 1} {

@@ -2,6 +2,7 @@ package blender
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"mediaOrquestator/internal/platform/runner"
 )
@@ -185,5 +187,234 @@ bpy.ops.wm.save_as_mainfile(filepath=%q)
 	}
 	if controlRan != nil {
 		t.Log("note: this Blender does not auto-run scripts even without the flag, so the check is weak here")
+	}
+}
+
+// looseSpec is a description resolved but not checked (see Resolve), for the tests of what the script does with one that
+// Load would have refused.
+func looseSpec(t *testing.T, doc string) *Spec {
+	t.Helper()
+	s, err := Resolve([]byte(doc), Env{Palette: DefaultPalette})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
+}
+
+// realEnv is the environment the example is checked in: its palette, the tempo of its project (120 bpm) and a design with
+// both fonts of the pack (display Playfair Display, body JetBrains Mono).
+func realEnv(t *testing.T, sources string) Env {
+	t.Helper()
+	return Env{Palette: PaletteFromDesign("#0b0f14", "#e8f1ec", "#ff3b30"), Sources: sources, BPM: 120, DesignFonts: map[string]bool{FontDisplay: true, FontBody: true}}
+}
+
+// realFonts decodes the fonts of the design of the example to TrueType in a temporary folder.
+func realFonts(t *testing.T) map[string]string {
+	t.Helper()
+	dir := t.TempDir()
+	out := map[string]string{}
+	for role, file := range map[string]string{FontDisplay: "playfair-display-700", FontBody: "jetbrains-mono-400"} {
+		raw, err := os.ReadFile("../../music/musicmotion/fonts/" + file + ".woff2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if out[role], err = EnsureTTF(dir, raw); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return out
+}
+
+// buildExample renders the example project (testdata/blender-build) as a built scene at a small size and returns the
+// folder it worked in. When DUMP_VIDEOS_DIR is set, the clip, the .blend, three frames and the log are copied to
+// <it>/blender-build/ (the samba share) so the owner can look at them; nothing is written there otherwise.
+func buildExample(t *testing.T, w, h, samples int) (string, Result) {
+	t.Helper()
+	info, r := realBlender(t)
+	dir := t.TempDir()
+	sources, err := filepath.Abs("../../../testdata/blender-build/sources")
+	if err != nil {
+		t.Fatal(err)
+	}
+	spec, err := Load(filepath.Join(sources, "titulo.scene.json"), 5, realEnv(t, sources))
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, err := Render(context.Background(), r, info.Path, Params{
+		Dir: dir, Out: "frames", Samples: samples, Device: "auto", GPU: os.Getenv("CUDA_VISIBLE_DEVICES") != "", Width: w, Height: h, Count: 150, FPS: 30,
+		Spec: spec, Sources: sources, Fonts: realFonts(t), BlendOut: "titulo.blend",
+	}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return dir, res
+}
+
+func TestRealBuiltSceneRendersKeepsTheBlendAndMoves(t *testing.T) {
+	dir, res := buildExample(t, 320, 180, 8)
+	if res.First != 1 || res.Last != 150 {
+		t.Errorf("range = %d..%d, want 1..150", res.First, res.Last)
+	}
+	if n := countFrames(filepath.Join(dir, "frames")); n != 150 {
+		t.Fatalf("frames = %d, want 150", n)
+	}
+	if fi, err := os.Stat(filepath.Join(dir, "titulo.blend")); err != nil || fi.Size() == 0 {
+		t.Errorf("the .blend was not kept: %v", err)
+	}
+	frame := func(n int) string {
+		b, err := os.ReadFile(filepath.Join(dir, "frames", fmt.Sprintf("f_%06d.png", n)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(b)
+	}
+	if frame(1) == frame(18) || frame(18) == frame(150) || frame(1) == frame(150) {
+		t.Error("frames 1, 18 and 150 must differ: the title rises and the camera moves")
+	}
+	out := filepath.Join(dir, "titulo.mp4")
+	if err := Join(context.Background(), runner.NewExecRunner(), dir, "frames", 30, 5, out); err != nil {
+		t.Fatal(err)
+	}
+	b, err := exec.Command("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", out).Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if d, _ := strconv.ParseFloat(strings.TrimSpace(string(b)), 64); d < 4.95 || d > 5.05 {
+		t.Errorf("the clip lasts %v s, want 5", d)
+	}
+	dumpBuilt(t, dir, res)
+}
+
+// dumpBuilt copies what a built-scene test made to $DUMP_VIDEOS_DIR/blender-build/ when that is set (the samba share,
+// for the owner to look at: nothing there is deleted). Ordinary runs leave nothing behind.
+func dumpBuilt(t *testing.T, dir string, res Result, log ...string) {
+	t.Helper()
+	if os.Getenv("DUMP_VIDEOS_DIR") == "" {
+		return
+	}
+	dumpTo(t, filepath.Join(os.Getenv("DUMP_VIDEOS_DIR"), "blender-build"), dir, []int{1, 18, 150}, log)
+	t.Logf("dumped (device %s)", res.Device)
+}
+
+// dumpTo copies the clip, the .blend, the frames asked for and the log of a built example (rendered in dir) to the folder to.
+func dumpTo(t *testing.T, to, dir string, frames []int, log []string) {
+	t.Helper()
+	if err := os.MkdirAll(to, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	copy := func(from, name string) {
+		b, err := os.ReadFile(from)
+		if err != nil {
+			t.Errorf("dump %s: %v", name, err)
+			return
+		}
+		if err := os.WriteFile(filepath.Join(to, name), b, 0o644); err != nil {
+			t.Errorf("dump %s: %v", name, err)
+		}
+	}
+	copy(filepath.Join(dir, "titulo.mp4"), "titulo.mp4")
+	copy(filepath.Join(dir, "titulo.blend"), "titulo.blend")
+	for _, n := range frames {
+		copy(filepath.Join(dir, "frames", fmt.Sprintf("f_%06d.png", n)), fmt.Sprintf("frame-%03d.png", n))
+	}
+	if len(log) > 0 {
+		if err := os.WriteFile(filepath.Join(to, "run.log"), []byte(strings.Join(log, "\n")+"\n"), 0o644); err != nil {
+			t.Errorf("dump run.log: %v", err)
+		}
+	}
+}
+
+// With DUMP_VIDEOS_DIR set, renders the example at the project's own size (1280x720, 30 fps, 32 samples) on the card the
+// process is given (CUDA_VISIBLE_DEVICES), times it, joins the clip and leaves everything on the share for the owner.
+func TestRealBuiltExampleAtTheProjectsSize(t *testing.T) {
+	if os.Getenv("DUMP_VIDEOS_DIR") == "" {
+		t.Skip("set DUMP_VIDEOS_DIR (and MO_REAL_BLENDER=1) to measure the example at 1280x720 and keep the result")
+	}
+	started := time.Now()
+	dir, res := buildExample(t, 1280, 720, 32)
+	rendered := time.Since(started)
+	out := filepath.Join(dir, "titulo.mp4")
+	joinStart := time.Now()
+	if err := Join(context.Background(), runner.NewExecRunner(), dir, "frames", 30, 5, out); err != nil {
+		t.Fatal(err)
+	}
+	info, _ := Detect(context.Background(), runner.NewExecRunner())
+	dumpBuilt(t, dir, res,
+		"scene: testdata/blender-build (titulo.scene.json), 5 s, 150 frames",
+		fmt.Sprintf("size: 1280x720 at 30 fps, 32 samples, Blender %s", info.Version),
+		fmt.Sprintf("CUDA_VISIBLE_DEVICES=%q device used: %s", os.Getenv("CUDA_VISIBLE_DEVICES"), res.Device),
+		fmt.Sprintf("build + render of the 150 frames: %.1f s; joining them into the clip: %.1f s", rendered.Seconds(), time.Since(joinStart).Seconds()),
+		fmt.Sprintf("started %s", started.Format(time.RFC3339)))
+}
+
+func TestRealBuiltAwkwardTextIsKeptAsDataAndNothingRuns(t *testing.T) {
+	info, r := realBlender(t)
+	dir := t.TempDir()
+	marker := filepath.Join(dir, "ran") // Blender runs in dir, so a relative `touch ran` would land here
+	awkward := "He said \"hi\" \\n 'x'\nline 2 __import__('os').system('touch ran') %s {x} é"
+	doc, _ := json.Marshal(map[string]any{
+		"version": 1,
+		"camera":  map[string]any{"keys": []any{map[string]any{"t": 0, "location": []float64{0, -6, 1}, "target": []float64{0, 0, 0}}}},
+		"objects": []any{map[string]any{"id": "t", "type": "text", "text": awkward, "size": 1}},
+	})
+	spec := filepath.Join(dir, "a.scene.json")
+	os.WriteFile(spec, doc, 0o644)
+	loaded, err := Load(spec, 1, Env{Palette: DefaultPalette, Sources: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Render(context.Background(), r, info.Path, Params{
+		Dir: dir, Out: "f", Samples: 1, Device: "cpu", Width: 32, Height: 18, Count: 1, FPS: 24,
+		Spec: loaded, Sources: dir, BlendOut: "a.blend",
+	}, nil); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(marker); err == nil {
+		t.Fatal("a command in the text of a description ran")
+	}
+	// the text in the kept .blend is exactly the one written
+	out, err := r.Run(context.Background(), info.Path, []string{"--factory-startup", "-b", "-noaudio", filepath.Join(dir, "a.blend"), "--disable-autoexec",
+		"--python-expr", "import bpy, json; print('MO_BODY ' + json.dumps(bpy.data.objects['t'].data.body))"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got string
+	for _, line := range strings.Split(string(out), "\n") {
+		if v, ok := strings.CutPrefix(line, "MO_BODY "); ok {
+			json.Unmarshal([]byte(v), &got)
+		}
+	}
+	if got != awkward {
+		t.Errorf("the text became %q", got)
+	}
+}
+
+func TestRealAFailedRenderOfABuiltSceneStillLeavesTheBlend(t *testing.T) {
+	info, r := realBlender(t)
+	dir := t.TempDir()
+	spec := looseSpec(t, `{"version":1,"camera":{"keys":[{"t":0,"location":[0,-6,1],"target":[0,0,0]}]},"objects":[{"id":"c","type":"cube","size":1}]}`)
+	_, err := Render(context.Background(), r, info.Path, Params{
+		Dir: dir, Out: "f", Samples: 1, Device: "gpu", GPU: false, Width: 32, Height: 18, Count: 1, FPS: 24,
+		Spec: spec, Sources: dir, BlendOut: "a.blend",
+	}, []string{"CUDA_VISIBLE_DEVICES="})
+	if err == nil || !strings.Contains(err.Error(), "no usable GPU") {
+		t.Fatalf("the render must fail on the device: %v", err)
+	}
+	if fi, statErr := os.Stat(filepath.Join(dir, "a.blend")); statErr != nil || fi.Size() == 0 {
+		t.Errorf("a render that fails after the build must leave the .blend: %v", statErr)
+	}
+}
+
+func TestRealABrokenDescriptionStopsWithItsOwnMessage(t *testing.T) {
+	info, r := realBlender(t)
+	dir := t.TempDir()
+	// Go would refuse this one (Load checks it); the script is the second line of defence, so it is handed unchecked
+	spec := looseSpec(t, `{"version":1,"camera":{"keys":[{"t":0}]},"objects":[{"id":"c","type":"monkey","size":1}]}`)
+	_, err := Render(context.Background(), r, info.Path, Params{
+		Dir: dir, Out: "f", Samples: 1, Device: "cpu", Width: 32, Height: 18, Count: 1, FPS: 24,
+		Spec: spec, Sources: dir, BlendOut: "a.blend",
+	}, nil)
+	if err == nil || !strings.Contains(err.Error(), "build:") {
+		t.Errorf("err = %v", err)
 	}
 }

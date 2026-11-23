@@ -25,6 +25,7 @@ import (
 	"mediaOrquestator/internal/project/quality"
 	"mediaOrquestator/internal/server/api"
 	"mediaOrquestator/internal/server/modelcat"
+	"mediaOrquestator/internal/video/blender"
 	"mediaOrquestator/internal/video/motion"
 	"mediaOrquestator/internal/video/videoedit"
 )
@@ -105,10 +106,16 @@ type Overrides struct {
 	ReviewVision func(model string) quality.Vision
 	VisionModels func(ctx context.Context) ([]string, error)
 	// MotionBrowser finds the browser that draws motion graphics, MotionWriter builds the model that writes their
-	// pages and MotionGenerate writes and checks one.
+	// pages, MotionGenerate writes and checks one and MotionRevise changes the timeline of a stored one.
 	MotionBrowser  func() (motion.Browser, error)
 	MotionWriter   func(ctx context.Context) (motion.Writer, motion.ModelInfo, error)
 	MotionGenerate func(ctx context.Context, w motion.Writer, browser string, r motion.Request, lim motion.Limits) (string, error)
+	MotionRevise   func(ctx context.Context, w motion.Writer, browser, page, instruction string, r motion.Request, lim motion.Limits, view motion.Viewer) (string, error)
+	// BlenderWrite writes and checks the description of a 3D scene.
+	BlenderWrite func(ctx context.Context, w blender.Writer, r blender.WriteRequest) (blender.WriteResult, error)
+	// BlenderInfo finds Blender and BlenderPreview draws a frame of a description with it.
+	BlenderInfo    func(ctx context.Context) (blender.Info, error)
+	BlenderPreview func(ctx context.Context, bin string, spec *blender.Spec, o blender.PreviewOptions) ([]byte, error)
 	// StoryboardRun writes the pictures of a videoclip.
 	StoryboardRun func(ctx context.Context, style, title string, shots []assist.ShotBrief, model string) (assist.Storyboard, error)
 }
@@ -321,6 +328,13 @@ func (h *Handler) Register(handle api.HandleFunc) {
 	handle("GET /api/projects/{id}/scenes/{scene}/motion", h.handleMotionGet)
 	handle("PUT /api/projects/{id}/scenes/{scene}/motion", h.handleMotionPut)
 	handle("POST /api/projects/{id}/scenes/{scene}/motion/generate", h.handleMotionGenerate)
+	handle("POST /api/projects/{id}/scenes/{scene}/motion/revise", h.handleMotionRevise)
+
+	// 3D scene descriptions written by a model (blender-scene-writer)
+	handle("POST /api/projects/{id}/blender/descriptions", h.handleDescriptionWrite)
+	handle("GET /api/projects/{id}/blender/descriptions/{name}", h.handleDescriptionGet)
+	handle("PUT /api/projects/{id}/blender/descriptions/{name}", h.handleDescriptionPut)
+	handle("POST /api/projects/{id}/blender/descriptions/{name}/preview", h.handleDescriptionPreview)
 
 	// data-store
 	handle("GET /api/data/status", h.handleDataStatus)

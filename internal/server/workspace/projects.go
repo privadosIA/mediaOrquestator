@@ -418,6 +418,9 @@ func buildCacheReport(cfg *config.Config, dir string) (*CacheReport, error) {
 			}
 			clipHash := pipeline.SceneClipHash(cfg, scene, dir)
 			d := cache.Decide(manifest, scene.ID, audioHash, imageHash, clipHash, false)
+			if scene.IsBlender() && pipeline.BlendMissing(dir, scene) {
+				d.Phases[cache.PhaseRender], d.Phases[cache.PhaseClip] = false, false // a built scene is rendered again without its .blend
+			}
 			if scene.Animate && cfg.Defaults.Animate != nil {
 				animateHash := cache.AnimateHash(pipeline.SceneAnimateParams(cfg, scene, dir))
 				d = cache.DecideAnimated(manifest, cache.OnlyFilter{}, scene.ID, audioHash, imageHash, clipHash, animateHash, false)

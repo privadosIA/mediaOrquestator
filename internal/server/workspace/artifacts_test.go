@@ -150,3 +150,18 @@ func TestArtifacts_AreRevalidatedByTheBrowser(t *testing.T) {
 		t.Fatal("it must stay revalidatable: Last-Modified is missing")
 	}
 }
+
+func TestArtifacts_ABuiltScenesBlendCanBeDownloaded(t *testing.T) {
+	s, projects := newProjectsServer(t)
+	createProject(t, s, "demo")
+	blend := []byte("BLENDER-v503\x00\x01binary")
+	writeArtifact(t, projects, "demo", "tmp/scene_titulo.blend", blend)
+
+	rec := doJSON(t, s.Handler(), http.MethodGet, "/api/projects/demo/artifacts/tmp/scene_titulo.blend", nil)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status %d: %s", rec.Code, rec.Body.String())
+	}
+	if rec.Body.String() != string(blend) {
+		t.Errorf("the .blend came back changed: %q", rec.Body.String())
+	}
+}

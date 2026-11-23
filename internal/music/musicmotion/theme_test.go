@@ -6,9 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 	"testing"
+
+	"mediaOrquestator/internal/music/musicmotion/fonts"
 )
 
 func themed(theme *Theme) Design {
@@ -128,11 +129,11 @@ func TestADesignWithATravelsThroughJSON(t *testing.T) {
 func TestThePackedFontsAreEmbeddedAndTheOldNamesStillWork(t *testing.T) {
 	for name, p := range packed {
 		for _, w := range p.Weights {
-			if b, err := fontsFS.ReadFile("fonts/" + name + "-" + strconv.Itoa(w) + ".woff2"); err != nil || len(b) < 5000 || string(b[:4]) != "wOF2" {
+			if b, err := fonts.ReadFile(name, w); err != nil || len(b) < 5000 || string(b[:4]) != "wOF2" {
 				t.Errorf("%s %d: %v", name, w, err)
 			}
 		}
-		if b, err := fontsFS.ReadFile("fonts/" + name + ".LICENSE.txt"); err != nil || !strings.Contains(string(b), "SIL Open Font License") {
+		if b, err := os.ReadFile("fonts/" + name + ".LICENSE.txt"); err != nil || !strings.Contains(string(b), "SIL Open Font License") {
 			t.Errorf("%s has its licence file: %v", name, err)
 		}
 		if Fonts[name] == "" || !strings.HasPrefix(Fonts[name], `"`+p.Family+`"`) {

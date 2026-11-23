@@ -36,7 +36,7 @@ func (h *Handler) SourcesDir(id string) string {
 	return filepath.Join(h.ProjectDir(id), config.SourcesSubdir)
 }
 
-// SourceKind says what a source file is from its name: image, video, blend or audio.
+// SourceKind says what a source file is from its name: image, video, blend, scene (a .scene.json description), font or audio.
 func SourceKind(name string) string {
 	if config.ValidImageName(name) {
 		return "image"
@@ -46,6 +46,12 @@ func SourceKind(name string) string {
 	}
 	if config.ValidBlendName(name) {
 		return "blend"
+	}
+	if config.ValidSceneSpecName(name) {
+		return "scene"
+	}
+	if config.ValidFontName(name) {
+		return "font"
 	}
 	return "audio"
 }
